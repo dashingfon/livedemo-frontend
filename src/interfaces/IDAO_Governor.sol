@@ -1,11 +1,17 @@
+// SPDX-Licence-Identifier: Unlicenced
+
 pragma solidity 0.8.19;
 
-interface IDAO_Governor {
+import "./IDiamondLoupe.sol";
+import "./IDiamondCut.sol";
+import "./IEventRegister.sol";
+
+interface IDAO_Governor is IDiamondLoupe, IEventRegister, IDiamondCut {
     event Proposed (
         address proposer,
         uint256 proposalID,
-        Proposal proposal,
-        string type
+        string,
+        Proposal proposal
     );
     event ProposalCancelled (
         address canceller,
@@ -16,10 +22,10 @@ interface IDAO_Governor {
         address executor,
         uint256 proposalID,
         Proposal proposal
-    )
+    );
     event ProposalUpdated (
-        ProposalStatus status,
         uint256 proposalID,
+        ProposalStatus status,
         Proposal proposal
     );
     event ProposalWon (
@@ -40,13 +46,13 @@ interface IDAO_Governor {
         Vote vote
     );
     event RelayedCall (
-        Relay relayType,
         address target,
         uint256 value,
-        bytes calldata data
+        bytes,
+        Relay relayType
     );
     event UpdatedURI (
-        string oldURI
+        string oldURI,
         string newURI
     );
 
@@ -54,7 +60,7 @@ interface IDAO_Governor {
         For,
         Against,
         Abstain
-    };
+    }
     enum Relay {
         CallRelay,
         DelegatecallRelay
@@ -67,32 +73,33 @@ interface IDAO_Governor {
         Failed,
         Pending,
         Executed
-    };
+    }
     struct Call {
-        address targetAddress
-        bytes targetCalldata 
-    };
+        address targetAddress;
+        bytes targetCalldata;
+    }
     struct Proposal {
-        uint256 votingPeriod,
-        string descriptionURI
-        Call[] calls,
-    };
+        uint256 votingPeriod;
+        string descriptionURI;
+        Call[] calls;
+    }
     struct Payment {
-        address paymentAddress,
-        uint256 paymentAmount
-        uint256 numberOfInstallments
-    };
-
-    struct Results {
-        uint256 forVotes,
-        uint256 againstVotes,
-        uint256 abstainVotes,
-        ProposalStatus proposalStatus
-    };
+        address paymentAddress;
+        uint256 paymentAmount;
+        uint256 numberOfInstallments;
+    }
+    struct Result {
+        uint256 forVotes;
+        uint256 againstVotes;
+        uint256 abstainVotes;
+        ProposalStatus proposalStatus;
+    }
 
     function governorURI() external view returns (string memory);
 
-    function isMember(address user) external view return (bool);
+    function isMember(address user) external view returns (bool);
+
+    function getShare() external view returns (uint8);
 
     function setUserProfile(string memory userURI) external;
 
@@ -100,21 +107,21 @@ interface IDAO_Governor {
         uint256 supplyAmount,
         uint256 recieveAmount,
         uint256 votingPeriod,
-        string memory fundingDescriptionURI,
+        string memory fundingDescriptionURI
     ) external;
 
     function proposePayment(
-        Payment payment, string memory paymentDescriptionURI, uint256 votingPeriod
+        Payment memory payment, string memory paymentDescriptionURI, uint256 votingPeriod
     ) external;
 
     function proposeMultiplePayment(
-        Payment[] payment, string memory paymentDescriptionURI, uint256 votingPeriod
+        Payment[] memory payment, string memory paymentDescriptionURI, uint256 votingPeriod
     ) external;
 
-    function propose(uint256 votingPeriod, string descriptionURI, Call[] calls) external;
+    function propose(uint256 votingPeriod, string memory descriptionURI, Call[] memory calls) external;
 
     function getFullProposalDetails(uint256 proposalId) external view returns (
-        Proposal proposal, Result proposalResult, string GovernorURI
+        Proposal memory proposal, Result memory proposalResult, string memory GovernorURI
     );
 
     function cancelProposal(uint256 proposalID) external;
@@ -123,7 +130,7 @@ interface IDAO_Governor {
 
     function getVoteCast(uint256 proposalId) external returns (Vote vote);
 
-    function getVoteResult(uint256 proposalId) external returns (Results);
+    function getVoteResult(uint256 proposalId) external returns (Result memory);
 
     function execute(uint256 proposalID) external;
 
@@ -134,7 +141,7 @@ interface IDAO_Governor {
     function relay(
         address target, uint256 value, bytes calldata data
     ) external payable returns (bool);
-    
+
     function delegateRelay(
         address target, uint256 value, bytes calldata data
     ) external payable returns (bool);
@@ -152,13 +159,4 @@ interface IDAO_Governor {
     function replaceFunctions(
         address facetAddress, bytes4[] memory functionSelectors
     ) external;
-
-    function facets() external view returns (Facet[] memory facets_);
-
-    function facetFunctionSelectors(address _facet) external view returns (bytes4[] memory facetFunctionSelectors_);
-
-    function facetAddresses() external view returns (address[] memory facetAddresses_);
-
-    function facetAddress(bytes4 _functionSelector) external view returns (address facetAddress_);
-
 }

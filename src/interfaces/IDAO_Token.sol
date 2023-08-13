@@ -1,4 +1,6 @@
-pragma solidity 0.8.19
+// SPDX-Licence-Identifier: Unlicenced
+
+pragma solidity 0.8.19;
 
 interface IDAO_Token {
     event TransferGovernance (
@@ -9,7 +11,7 @@ interface IDAO_Token {
     );
 
     function balanceOf(address account, uint256 id) external view returns (uint256);
-    
+
     function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)
         external
         view

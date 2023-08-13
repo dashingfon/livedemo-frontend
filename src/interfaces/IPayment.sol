@@ -1,13 +1,15 @@
-pragma solidity 0.8.19
+// SPDX-Licence-Identifier: Unlicenced
+
+pragma solidity 0.8.19;
 
 interface IPayment {
     event PaymentCreated (
         address payer,
         address payee,
-        uint256 paymentId
+        uint256 paymentId,
         uint256 amountPerInstallment,
         uint256 numberOfInstallments,
-        uint256 intervalBetweenInstallments
+        uint256 intervalBetweenInstallments,
         uint256 start
     );
 
@@ -20,45 +22,45 @@ interface IPayment {
     event PaymentClaimed (
         address payer,
         address payee,
-        uint256 paymentId
+        uint256 paymentId,
         uint256 amount
     );
 
     struct PaymentRequest{
-        address payee,
-        uint256 amountPerInstallment,
-        uint256 numberOfInstallments,
-        uint256 intervalBetweenInstallments,
-        uint256 delay
-    };
+        address payee;
+        uint256 amountPerInstallment;
+        uint256 numberOfInstallments;
+        uint256 intervalBetweenInstallments;
+        uint256 delay;
+    }
 
     struct Payment{
-        address payer,
-        address payee,
-        uint256 paymentId
-        uint256 amountPerInstallment,
-        uint256 numberOfInstallments,
-        uint256 intervalBetweenInstallments
-        uint256 nextInstallment
-    };
+        address payer;
+        address payee;
+        uint256 paymentId;
+        uint256 amountPerInstallment;
+        uint256 numberOfInstallments;
+        uint256 intervalBetweenInstallments;
+        uint256 nextInstallment;
+    }
 
-    function createPayment(PaymentRequest) external;
+    function createPayment(PaymentRequest memory) external;
 
-    function createPaymentBatch(PaymentRequest[] payments) external;
+    function createPaymentBatch(PaymentRequest[] memory payments) external;
 
     function cancelPayment(uint256 paymentId) external;
 
-    function cancelPaymentBatch(uint256[] paymentIds) external;
+    function cancelPaymentBatch(uint256[] memory paymentIds) external;
 
     function claimPayment(uint256 paymentId) external;
 
-    function claimPaymentBatch(uint256[] paymentIds) external;
+    function claimPaymentBatch(uint256[] memory paymentIds) external;
 
     function withdrawBalance() external;
 
-    function getPayment(uint256 paymentId) external view returns(Payment);
+    function getPayment(uint256 paymentId) external view returns(Payment memory);
 
-    function getBatchPayment(uint256[] paymentIds) external view returns(Payment[]);
+    function getBatchPayment(uint256[] memory paymentIds) external view returns(Payment[] memory);
 
     /// Governance Controlled
 

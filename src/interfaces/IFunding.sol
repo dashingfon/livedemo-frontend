@@ -1,4 +1,6 @@
-pragma solidity 0.8.19
+// SPDX-Licence-Identifier: Unlicenced
+
+pragma solidity 0.8.19;
 
 interface IFunding {
     event FundingCreated (
@@ -25,12 +27,12 @@ interface IFunding {
     );
 
     struct Funding {
-        address creator,
-        address buyer,
-        address token,
-        uint256 tokenId,
-        uint256 amount,
-        uint256 price
+        address creator;
+        address buyer;
+        address token;
+        uint256 tokenId;
+        uint256 amount;
+        uint256 price;
     }
 
     function createFunding(
@@ -40,9 +42,9 @@ interface IFunding {
 
     function buyFunding(uint256 fundingId) external;
 
-    function getFunding(uint256 fundingId) external view returns(Funding);
+    function getFunding(uint256 fundingId) external view returns(Funding memory);
 
-    function getBatchFunding(uint256[] fundingIds) external view returns(Funding[]);
+    function getBatchFunding(uint256[] memory fundingIds) external view returns(Funding[] memory);
 
     /// Governance Controlled
 

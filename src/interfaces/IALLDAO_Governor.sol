@@ -1,4 +1,6 @@
-pragma solidity 0.8.19
+// SPDX-Licence-Identifier: Unlicenced
+
+pragma solidity 0.8.19;
 
 import "./IDAO_Governor.sol";
 
@@ -9,39 +11,15 @@ interface IALLDAO_Governor is IDAO_Governor {
         string DAO_Name
     );
     struct Shares {
-        address shareholder,
-        uint8 shares
-    };
-    function createDAO(string daoName, Shares[] shares) external;
+        address shareholder;
+        uint8 shares;
+    }
+    function createDAO(string memory daoName, Shares[] memory shares) external;
 
-    function isChildDao(address contract) external view returns (bool);
+    function isChildDao(address) external view returns (bool);
 
-    function currency() exxternal view returns(address);
+    function currency() external view returns(address);
 
-    function getFees(address contract) external;
+    function getFees(address) external;
 
-
-    // functions callable only by a child dao
-
-    function registerProposal();
-
-    function registerProposalResult();
-
-    function registerFunding();
-
-    function registerPayment();
-
-    function registerUpdatedUserURI();
-
-    function registerUpdatedGovernanceURI();
-
-    function registerUpdatedTokenURI();
-
-    function registerGovnanceTransfer();
-
-    function registerAddFunction();
-
-    function registerRemoveFunction();
-
-    function registerReplaceFunction();
 }

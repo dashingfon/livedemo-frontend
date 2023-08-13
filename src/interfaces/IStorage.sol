@@ -1,4 +1,6 @@
-pragma solidity 0.8.19
+// SPDX-Licence-Identifier: Unlicenced
+
+pragma solidity 0.8.19;
 
 interface IStorage {
     event StorageBought(
