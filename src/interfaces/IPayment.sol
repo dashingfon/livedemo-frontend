@@ -1,4 +1,4 @@
-// SPDX-Licence-Identifier: Unlicenced
+// SPDX-Licence-Identifier: UNLICENSED
 
 pragma solidity 0.8.19;
 
@@ -9,7 +9,7 @@ interface IPayment {
         uint256 paymentId,
         uint256 amountPerInstallment,
         uint256 numberOfInstallments,
-        uint256 intervalBetweenInstallments,
+        uint256 secondsBetweenInstallments,
         uint256 start
     );
 
@@ -28,10 +28,11 @@ interface IPayment {
 
     struct PaymentRequest{
         address payee;
+        address currency;
         uint256 amountPerInstallment;
         uint256 numberOfInstallments;
-        uint256 intervalBetweenInstallments;
-        uint256 delay;
+        uint256 secondsBetweenInstallments;
+        uint256 secondsDelay;
     }
 
     struct Payment{
@@ -40,8 +41,8 @@ interface IPayment {
         uint256 paymentId;
         uint256 amountPerInstallment;
         uint256 numberOfInstallments;
-        uint256 intervalBetweenInstallments;
-        uint256 nextInstallment;
+        uint256 secondsBetweenInstallments;
+        uint256 nextInstallmentTimestamp;
     }
 
     function createPayment(PaymentRequest memory) external;
