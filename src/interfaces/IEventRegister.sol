@@ -7,20 +7,23 @@ interface IEventRegister {
         address payer,
         address payee,
         address currency,
-        uint256 paymentId,
         uint256 amountPerInstallment,
+        uint256 paymentId,
         uint256 numberOfInstallment,
         uint256 paymentInterval
     ) external;
 
-    function registerPaymentClaim(
-        uint256 proposalId,
-        uint256 claimAmount
-    ) external;
+    function registerPaymentClaimed(uint256 proposalId, uint256 amountClaimed) external;
+
+    function registerPaymentCancelled(uint256 paymentId, uint256 amountCancelled) external;
+
+    // function registerListing();
+
+    // function registerListingSold();
+
+    // function registerListingCancelled();
 
     // function registerProposalResult();
-
-    // function registerFunding();
 
     // function registerProposal();
 
@@ -39,5 +42,4 @@ interface IEventRegister {
     // function registerRemoveFunction();
 
     // function registerReplaceFunction();
-
 }

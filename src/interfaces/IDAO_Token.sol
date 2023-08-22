@@ -3,12 +3,7 @@
 pragma solidity 0.8.19;
 
 interface IDAO_Token {
-    event TransferGovernance (
-        address operator,
-        address from,
-        address to,
-        uint256 amount
-    );
+    event TransferGovernance(address operator, address from, address to, uint256 amount);
 
     function balanceOf(address account, uint256 id) external view returns (uint256);
 
@@ -21,13 +16,7 @@ interface IDAO_Token {
 
     function isApprovedForAll(address account, address operator) external view returns (bool);
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external;
 
     function safeBatchTransferFrom(
         address from,

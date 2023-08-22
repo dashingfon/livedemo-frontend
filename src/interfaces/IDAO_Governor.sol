@@ -4,57 +4,18 @@ pragma solidity 0.8.19;
 
 import "./IDiamondLoupe.sol";
 import "./IDiamondCut.sol";
-import "./IEventRegister.sol";
 
-interface IDAO_Governor is IDiamondLoupe, IEventRegister, IDiamondCut {
-    event Proposed (
-        address proposer,
-        uint256 proposalID,
-        string,
-        Proposal proposal
-    );
-    event ProposalCancelled (
-        address canceller,
-        uint256 proposalID,
-        Proposal proposal
-    );
-    event ProposalExecuted (
-        address executor,
-        uint256 proposalID,
-        Proposal proposal
-    );
-    event ProposalUpdated (
-        uint256 proposalID,
-        ProposalStatus status,
-        Proposal proposal
-    );
-    event ProposalWon (
-        uint256 proposalID,
-        Proposal proposal,
-        Result results
-    );
+interface IDAO_Governor is IDiamondLoupe, IDiamondCut {
+    event Proposed(address proposer, uint256 proposalID, string, Proposal proposal);
+    event ProposalCancelled(address canceller, uint256 proposalID, Proposal proposal);
+    event ProposalExecuted(address executor, uint256 proposalID, Proposal proposal);
+    event ProposalUpdated(uint256 proposalID, ProposalStatus status, Proposal proposal);
+    event ProposalWon(uint256 proposalID, Proposal proposal, Result results);
 
-    event ProposalLost (
-        uint256 proposalID,
-        Proposal proposal,
-        Result results
-    );
-    event Voted (
-        address voter,
-        uint256 proposalID,
-        Proposal proposal,
-        Vote vote
-    );
-    event RelayedCall (
-        address target,
-        uint256 value,
-        bytes,
-        Relay relayType
-    );
-    event UpdatedURI (
-        string oldURI,
-        string newURI
-    );
+    event ProposalLost(uint256 proposalID, Proposal proposal, Result results);
+    event Voted(address voter, uint256 proposalID, Proposal proposal, Vote vote);
+    event RelayedCall(address target, uint256 value, bytes, Relay relayType);
+    event UpdatedURI(string oldURI, string newURI);
 
     enum Vote {
         For,
@@ -74,20 +35,23 @@ interface IDAO_Governor is IDiamondLoupe, IEventRegister, IDiamondCut {
         Pending,
         Executed
     }
+
     struct Call {
         address targetAddress;
         bytes targetCalldata;
     }
+
     struct Proposal {
-        uint256 votingPeriod;
         string descriptionURI;
         Call[] calls;
     }
+
     struct Payment {
         address paymentAddress;
         uint256 paymentAmount;
         uint256 numberOfInstallments;
     }
+
     struct Result {
         uint256 forVotes;
         uint256 againstVotes;
@@ -103,26 +67,25 @@ interface IDAO_Governor is IDiamondLoupe, IEventRegister, IDiamondCut {
 
     function setUserProfile(string memory userURI) external;
 
-    function proposeFunding(
+    function proposeListing(
         uint256 supplyAmount,
         uint256 recieveAmount,
         uint256 votingPeriod,
-        string memory fundingDescriptionURI
+        string memory listingDescriptionURI
     ) external;
 
-    function proposePayment(
-        Payment memory payment, string memory paymentDescriptionURI, uint256 votingPeriod
-    ) external;
+    function proposePayment(Payment memory payment, string memory paymentDescriptionURI, uint256 votingPeriod)
+        external;
 
-    function proposeMultiplePayment(
-        Payment[] memory payment, string memory paymentDescriptionURI, uint256 votingPeriod
-    ) external;
+    function proposePayments(Payment[] memory payment, string memory paymentDescriptionURI, uint256 votingPeriod)
+        external;
 
     function propose(uint256 votingPeriod, string memory descriptionURI, Call[] memory calls) external;
 
-    function getFullProposalDetails(uint256 proposalId) external view returns (
-        Proposal memory proposal, Result memory proposalResult, string memory GovernorURI
-    );
+    function getFullProposalDetails(uint256 proposalId)
+        external
+        view
+        returns (Proposal memory proposal, Result memory proposalResult, string memory GovernorURI);
 
     function cancelProposal(uint256 proposalID) external;
 
@@ -138,25 +101,13 @@ interface IDAO_Governor is IDiamondLoupe, IEventRegister, IDiamondCut {
 
     /// The functions below will only be callable after the governance process
 
-    function relay(
-        address target, uint256 value, bytes calldata data
-    ) external payable returns (bool);
-
-    function delegateRelay(
-        address target, uint256 value, bytes calldata data
-    ) external payable returns (bool);
+    function relay(address target, uint256 value, bytes calldata data) external payable returns (bool);
 
     function setGovernorURI(string calldata URI) external;
 
-    function addFunctions(
-        address facetAddress, bytes4[] memory functionSelectors
-    ) external;
+    function addFunctions(address facetAddress, bytes4[] memory functionSelectors) external;
 
-    function removeFunctions(
-        address facetAddress, bytes4[] memory functionSelectors
-    ) external;
+    function removeFunctions(address facetAddress, bytes4[] memory functionSelectors) external;
 
-    function replaceFunctions(
-        address facetAddress, bytes4[] memory functionSelectors
-    ) external;
+    function replaceFunctions(address facetAddress, bytes4[] memory functionSelectors) external;
 }

@@ -10,26 +10,26 @@ import {LibDiamond} from "../libraries/LibDiamond.sol";
 
 pragma solidity 0.8.19;
 
-    // function registerProposal();
+// function registerProposal();
 
-    // function registerProposalResult();
+// function registerProposalResult();
 
-    // function registerFunding();
+// function registerListing();
 
-    // function registerPayment();
+// function registerPayment();
 
-    // function registerPaymentClaim();
+// function registerPaymentClaim();
 
-    // function registerUpdatedUserURI();
+// function registerUpdatedUserURI();
 
-    // function registerUpdatedGovernanceURI();
+// function registerUpdatedGovernanceURI();
 
-    // function registerUpdatedTokenURI();
+// function registerUpdatedTokenURI();
 
-    // function registerGovnanceTransfer();
+// function registerGovnanceTransfer();
 
-    // function registerAddFunction();
+// function registerAddFunction();
 
-    // function registerRemoveFunction();
+// function registerRemoveFunction();
 
-    // function registerReplaceFunction();
+// function registerReplaceFunction();
