@@ -59,7 +59,7 @@ interface IDAO_Governor is IDiamondLoupe, IDiamondCut {
         ProposalStatus proposalStatus;
     }
 
-    function governorURI() external view returns (string memory);
+    function uri() external view returns (string memory);
 
     function isMember(address user) external view returns (bool);
 

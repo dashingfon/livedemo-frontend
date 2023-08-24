@@ -36,19 +36,18 @@ contract Storage is IStorage {
     /// @inheritdoc	IStorage
     function viewSubscription(address user) public view returns (uint256) {
         uint256 userSubscriptionExpiration = suscriptions[user];
-        uint256 validity = userSubscriptionExpiration > block.timestamp ? userSubscriptionExpiration : block.timestamp;
-        return validity;
+        return userSubscriptionExpiration > block.timestamp ? userSubscriptionExpiration : block.timestamp;
     }
 
     /// @inheritdoc	IStorage
     function isSubscribed(address user) external view returns (bool status) {
-        uint256 userSubscriptionExpiration = suscriptions[user];
-        return userSubscriptionExpiration > block.timestamp;
+        return suscriptions[user] > block.timestamp;
     }
 
     /// @inheritdoc	IStorage
     function setCurrency(address _currency) external {
         require(msg.sender == owner, "only owner can call");
+        require(currency != address(0), "currency cannot be the zero address");
         currency = _currency;
     }
 
@@ -58,5 +57,10 @@ contract Storage is IStorage {
         require(denumerator > 0, "denumerator cannot be zero");
         priceNumerator = numerator;
         priceDenumerator = denumerator;
+    }
+
+    /// @inheritdoc	IStorage
+    function getPrice() external view returns (uint256) {
+        return priceNumerator / priceDenumerator;
     }
 }

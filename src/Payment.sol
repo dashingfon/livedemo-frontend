@@ -19,11 +19,6 @@ contract Payments is IPayment {
 
     mapping(uint256 => Payment) public payments;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call");
-        _;
-    }
-
     constructor() {
         owner = msg.sender;
     }
@@ -93,7 +88,6 @@ contract Payments is IPayment {
     function _createPayment(address creator, PaymentRequest memory paymentRequest) private {
         uint256 id = currentPaymentId;
         uint256 totalPaymentAmount = (paymentRequest.numberOfInstallments * paymentRequest.amountPerInstallment);
-        uint256 feeAmount = calculateFee(totalPaymentAmount);
 
         require(paymentRequest.payee != creator, "payer cannot be payee");
         require(paymentRequest.payee != address(0), "payee cannot be zero address");
@@ -112,6 +106,7 @@ contract Payments is IPayment {
             nextInstallmentTimestamp: block.timestamp + paymentRequest.secondsDelay
         });
 
+        uint256 feeAmount = calculateFee(totalPaymentAmount);
         IERC20(payment.currency).safeTransferFrom(creator, address(this), totalPaymentAmount);
         IERC20(payment.currency).safeTransfer(owner, feeAmount);
 
@@ -188,7 +183,8 @@ contract Payments is IPayment {
 
     // Owner Function
 
-    function setFee(uint8 _feePercent) external onlyOwner {
+    function setFee(uint8 _feePercent) external {
+        require(msg.sender == owner, "Only owner can call");
         feePercent = _feePercent;
     }
 }

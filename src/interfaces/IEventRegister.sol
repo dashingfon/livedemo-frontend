@@ -3,23 +3,16 @@
 pragma solidity 0.8.19;
 
 interface IEventRegister {
-// function registerProposalResult();
+    function registerVoteUpdate(address sender, uint256 senderBalance, address reciever, uint256 recieverBalance)
+        external;
 
-// function registerProposal();
+    function registerUpdatedGovernanceURI() external;
 
-// function registerPaymentClaim();
+    function registerProposal() external;
 
-// function registerUpdatedUserURI();
+    // function registerAddFunction();
 
-// function registerUpdatedGovernanceURI();
+    // function registerRemoveFunction();
 
-// function registerUpdatedTokenURI();
-
-// function registerGovnanceTransfer();
-
-// function registerAddFunction();
-
-// function registerRemoveFunction();
-
-// function registerReplaceFunction();
+    // function registerReplaceFunction();
 }

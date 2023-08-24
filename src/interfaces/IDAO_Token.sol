@@ -2,35 +2,17 @@
 
 pragma solidity 0.8.19;
 
-interface IDAO_Token {
-    event TransferGovernance(address operator, address from, address to, uint256 amount);
+import {IERC1155} from "openzeppelin/token/ERC1155/IERC1155.sol";
+import {IVotes} from "openzeppelin/governance/utils/IVotes.sol";
 
-    function balanceOf(address account, uint256 id) external view returns (uint256);
-
-    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)
-        external
-        view
-        returns (uint256[] memory);
-
-    function setApprovalForAll(address operator, bool approved) external;
-
-    function isApprovedForAll(address account, address operator) external view returns (bool);
-
-    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external;
-
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] calldata ids,
-        uint256[] calldata amounts,
-        bytes calldata data
-    ) external;
-
-    function delegate(address delegatee) external;
-
-    function getVotes(address account) external view returns (uint256);
-
-    function getPastVotes(address account, uint256 blockNumber) external view returns (uint256);
-
-    function getPastTotalSupply(uint256 blockNumber) external view returns (uint256);
+/// @title A title that should describe the contract/interface
+/// @author The name of the author
+/// @notice Explain to an end user what this does
+/// @dev Explain to a developer any extra details
+interface IDAO_Token is IERC1155, IVotes {
+    /// @notice Explain to an end user what this does
+    /// @dev Explain to a developer any extra details
+    /// @param Documents a parameter just like in doxygen (must be followed by parameter name)
+    /// @return Documents the return variables of a contract’s function state variable
+    event VoteUpdate(address sender, address reciever, uint256 amount, string tokenURI);
 }

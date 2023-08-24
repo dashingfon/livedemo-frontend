@@ -18,11 +18,6 @@ contract Listing is IListing, ERC1155Holder {
 
     mapping(uint256 => Listing) public listings;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call");
-        _;
-    }
-
     constructor() {
         owner = msg.sender;
     }
@@ -112,8 +107,10 @@ contract Listing is IListing, ERC1155Holder {
 
         listings[id] = listing;
         currentListingId = id + 1;
-        IERC1155(listing.token).safeTransferFrom(creator, address(this), listing.tokenId, listing.numberOfTokens, "");
-        emit ListingCreated(listing);
+        IERC1155 token = IERC1155(listing.token);
+        token.safeTransferFrom(creator, address(this), listing.tokenId, listing.numberOfTokens, "");
+        string uri = token.uri(listing.tokenId);
+        emit ListingCreated(listing, uri);
     }
 
     function _cancelListing(address canceller, Listing memory listing) private {
@@ -130,9 +127,10 @@ contract Listing is IListing, ERC1155Holder {
 
         listing.state = ListingState.Sold;
         listings[listing.listingId] = listing;
-        IERC20(listing.paymentToken).safeTransferFrom(buyer, address(this), listing.price);
-        IERC20(listing.paymentToken).safeTransfer(owner, calculateFee(listing.price));
-        IERC20(listing.paymentToken).safeTransfer(listing.creator, calculateRemovedFee(listing.price));
+        IERC20 paymentToken = IERC20(listing.paymentToken);
+        paymentToken.safeTransferFrom(buyer, address(this), listing.price);
+        paymentToken.safeTransfer(owner, calculateFee(listing.price));
+        paymentToken.safeTransfer(listing.creator, calculateRemovedFee(listing.price));
         IERC1155(listing.token).safeTransferFrom(address(this), buyer, listing.tokenId, listing.numberOfTokens, "");
         emit ListingSold(listing.listingId);
     }
@@ -157,7 +155,8 @@ contract Listing is IListing, ERC1155Holder {
 
     //// Governor Function
 
-    function setFee(uint8 _feePercent) external onlyOwner {
+    function setFee(uint8 _feePercent) external {
+        require(msg.sender == owner, "Only owner can call");
         feePercent = _feePercent;
     }
 }

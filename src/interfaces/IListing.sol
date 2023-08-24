@@ -9,7 +9,7 @@ import {IERC1155Receiver} from "openzeppelin/token/ERC1155/IERC1155Receiver.sol"
 interface IListing is IERC1155Receiver {
     /// @notice the event that is emitted when a listing is created
     /// @param listing the listing struct
-    event ListingCreated(Listing listing);
+    event ListingCreated(Listing listing, string tokenUIR);
 
     /// @notice the event that is emitted when a listing is cancelled
     /// @param listingId the liting id

@@ -5,7 +5,6 @@ pragma solidity 0.8.19;
 /// @title the interface for the Storage contract
 /// @author Mfon Stephen Nwa
 interface IStorage {
-
     /// @notice the event emitted when a user subscribes for
     /// @param user the address of the user
     /// @param duration the duration the user subscribes for
@@ -33,4 +32,8 @@ interface IStorage {
     /// @param numerator the price numerator
     /// @param denumerator the price denumerator
     function setPrice(uint256 numerator, uint256 denumerator) external;
+
+    /// @notice function to set the price of subscribing
+    /// @return price the cost of one second subscription
+    function getPrice() external view returns (uint256 price);
 }
