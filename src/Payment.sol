@@ -20,7 +20,7 @@ contract Payments is IPayment {
     mapping(uint256 => Payment) public payments;
 
     modifier onlyOwner() {
-        require(msg.sender == (owner), "Only owner can call");
+        require(msg.sender == owner, "Only owner can call");
         _;
     }
 

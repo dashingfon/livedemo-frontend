@@ -19,7 +19,7 @@ contract Listing is IListing, ERC1155Holder {
     mapping(uint256 => Listing) public listings;
 
     modifier onlyOwner() {
-        require(msg.sender == (address(owner)), "Only owner can call");
+        require(msg.sender == owner, "Only owner can call");
         _;
     }
 
