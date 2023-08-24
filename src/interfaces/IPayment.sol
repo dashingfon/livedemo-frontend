@@ -6,33 +6,19 @@ pragma solidity 0.8.19;
 /// @author Mfon Stephen Nwa
 /// @notice This interface containg the functions the Payment contract implements
 interface IPayment {
-
     /// @notice The event that is trigered when a payment is created
-    /// @param payer the person making the payment
-    /// @param payee the person being paid
-    /// @param currency the address of the token the payment is made in
-    /// @param paymentId the id of the payment
-    /// @param amountPerInstallment the amount to be paid per installment
-    /// @param numberOfInstallments the number of installments the payment will be completed in
-    /// @param secondsBetweenInstallments the number of seconds between each installment
-    /// @param firstInstallmentTimestamp the timestamp when the first installment will be paid in
-    event PaymentCreated(
-        address payer,
-        address payee,
-        address currency,
-        uint256 paymentId,
-        uint256 amountPerInstallment,
-        uint256 numberOfInstallments,
-        uint256 secondsBetweenInstallments,
-        uint256 firstInstallmentTimestamp
-    );
+    /// @param payment the payment struct
+    event PaymentCreated(Payment payment);
 
     /// @notice The event that is trigered when a payment is cancelled
-    /// @param payer the person making the payment
-    /// @param payee the person being paid
     /// @param paymentId the id of the payment
-    /// @param amountReturned the amount returned to the payer
-    event PaymentCancelled(address payer, address payee, uint256 paymentId, uint256 amountReturned);
+    /// @param amountCancelled the amount returned to the payer
+    event PaymentCancelled(uint256 paymentId, uint256 amountCancelled);
+
+    /// @notice The event that is trigered when a payment is claimed
+    /// @param paymentId the id of the payment
+    /// @param amountClaimed the amount returned to the payer
+    event PaymentClaimed(uint256 paymentId, uint256 amountClaimed);
 
     enum PaymentState {
         None,
@@ -62,11 +48,11 @@ interface IPayment {
         uint256 nextInstallmentTimestamp;
     }
 
-    /// @notice function to create a payment
+    /// @notice function to create a payment, must approve the contract the total payment amount before call
     /// @param paymentRequest the PaymentRequest struct
     function createPayment(PaymentRequest memory paymentRequest) external;
 
-    /// @notice function to create multiple payments
+    /// @notice function to create multiple payments, must approve the contract the total payment amount before call
     /// @param paymentRequests an array of PaymentRequest structs
     function createPayments(PaymentRequest[] memory paymentRequests) external;
 
@@ -89,12 +75,12 @@ interface IPayment {
     /// @notice function to calculate the fee deducted from a payment
     /// @param amount the amount to calculate the fee
     /// @return feeAmount the fee
-    function calculateFee(uint256 amount) external pure returns (uint256 feeAmount);
+    function calculateFee(uint256 amount) external view returns (uint256 feeAmount);
 
     /// @notice function to calculate the remaining amount after deducting the fee
     /// @param amount the amount to calculate from
     /// @return feeRemovedAmount the remaining amount after deducting the fee
-    function calculateRemovedFee(uint256 amount) external pure returns (uint256 feeRemovedAmount);
+    function calculateRemovedFee(uint256 amount) external view returns (uint256 feeRemovedAmount);
 
     /// @notice function to get the payment from an Id
     /// @param paymentId the id of the payment

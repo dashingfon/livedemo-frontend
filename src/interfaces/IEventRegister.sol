@@ -3,43 +3,23 @@
 pragma solidity 0.8.19;
 
 interface IEventRegister {
-    function registerPayment(
-        address payer,
-        address payee,
-        address currency,
-        uint256 amountPerInstallment,
-        uint256 paymentId,
-        uint256 numberOfInstallment,
-        uint256 paymentInterval
-    ) external;
+// function registerProposalResult();
 
-    function registerPaymentClaimed(uint256 proposalId, uint256 amountClaimed) external;
+// function registerProposal();
 
-    function registerPaymentCancelled(uint256 paymentId, uint256 amountCancelled) external;
+// function registerPaymentClaim();
 
-    // function registerListing();
+// function registerUpdatedUserURI();
 
-    // function registerListingSold();
+// function registerUpdatedGovernanceURI();
 
-    // function registerListingCancelled();
+// function registerUpdatedTokenURI();
 
-    // function registerProposalResult();
+// function registerGovnanceTransfer();
 
-    // function registerProposal();
+// function registerAddFunction();
 
-    // function registerPaymentClaim();
+// function registerRemoveFunction();
 
-    // function registerUpdatedUserURI();
-
-    // function registerUpdatedGovernanceURI();
-
-    // function registerUpdatedTokenURI();
-
-    // function registerGovnanceTransfer();
-
-    // function registerAddFunction();
-
-    // function registerRemoveFunction();
-
-    // function registerReplaceFunction();
+// function registerReplaceFunction();
 }

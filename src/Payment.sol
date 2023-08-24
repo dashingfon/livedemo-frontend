@@ -3,49 +3,40 @@
 pragma solidity 0.8.19;
 
 import {IPayment} from "./interfaces/IPayment.sol";
-import {IALLDAO_Governor} from "./interfaces/IALLDAO_Governor.sol";
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
 import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 /// @title Payment Contract
 /// @author Mfon Stephen Nwa
-/// @notice This is the contract that handles payment between any two parties
+/// @notice This contract handles payment between any two parties
 contract Payments is IPayment {
     using SafeERC20 for IERC20;
 
-    error Payments__PayerCannotBePayee();
-    error Payments__PayeeCannotBeZeroAddress();
-    error Payments__PaymentCurrencyCannotBeZeroAddress();
-    error Payments__TotalPaymentAmountCannotBeZero();
-    error Payments__InvalidState(PaymentState, uint256);
-    error Payments__NotThePayer();
-    error Payments__NotThePayee();
-
-    IALLDAO_Governor public immutable governor;
-    uint256 public currentPaymentId;
     uint8 public feePercent = 3;
     uint8 public constant DENOMINATOR = 100;
+    address immutable owner;
+    uint256 public currentPaymentId;
 
     mapping(uint256 => Payment) public payments;
 
-    modifier onlyGovernor() {
-        require(msg.sender == (address(governor)), "Only governor can call");
+    modifier onlyOwner() {
+        require(msg.sender == (owner), "Only owner can call");
         _;
     }
 
     constructor() {
-        governor = IALLDAO_Governor(msg.sender);
+        owner = msg.sender;
     }
 
     // Public Functions
 
     /// @inheritdoc	IPayment
-    function calculateFee(uint256 amount) public pure returns (uint256 feeAmount) {
+    function calculateFee(uint256 amount) public view returns (uint256 feeAmount) {
         feeAmount = (amount * feePercent) / DENOMINATOR;
     }
 
     /// @inheritdoc	IPayment
-    function calculateRemovedFee(uint256 amount) public pure returns (uint256 feeRemovedAmount) {
+    function calculateRemovedFee(uint256 amount) public view returns (uint256 feeRemovedAmount) {
         feeRemovedAmount = amount - ((amount * feePercent) / DENOMINATOR);
     }
 
@@ -99,27 +90,19 @@ contract Payments is IPayment {
 
     // Private Functions
 
-    function _createPayment(address sender, PaymentRequest memory paymentRequest) private {
+    function _createPayment(address creator, PaymentRequest memory paymentRequest) private {
         uint256 id = currentPaymentId;
         uint256 totalPaymentAmount = (paymentRequest.numberOfInstallments * paymentRequest.amountPerInstallment);
         uint256 feeAmount = calculateFee(totalPaymentAmount);
 
-        if (paymentRequest.payee == sender) {
-            revert Payments__PayerCannotBePayee();
-        }
-        if (paymentRequest.payee == address(0)) {
-            revert Payments__PayeeCannotBeZeroAddress();
-        }
-        if (paymentRequest.currency == address(0)) {
-            revert Payments__PaymentCurrencyCannotBeZeroAddress();
-        }
-        if (totalPaymentAmount == 0) {
-            revert Payments__TotalPaymentAmountCannotBeZero();
-        }
+        require(paymentRequest.payee != creator, "payer cannot be payee");
+        require(paymentRequest.payee != address(0), "payee cannot be zero address");
+        require(paymentRequest.currency != address(0), "currency cannot be zero address");
+        require(totalPaymentAmount != 0, "total payment amount cannot be zero");
 
         Payment memory payment = Payment({
             paymentState: PaymentState.Paying,
-            payer: sender,
+            payer: creator,
             paymentId: id,
             payee: paymentRequest.payee,
             currency: paymentRequest.currency,
@@ -129,12 +112,12 @@ contract Payments is IPayment {
             nextInstallmentTimestamp: block.timestamp + paymentRequest.secondsDelay
         });
 
-        IERC20(payment.currency).safeTransferFrom(sender, address(this), totalPaymentAmount);
-        IERC20(payment.currency).safeTransfer(address(governor), feeAmount);
+        IERC20(payment.currency).safeTransferFrom(creator, address(this), totalPaymentAmount);
+        IERC20(payment.currency).safeTransfer(owner, feeAmount);
 
-        currentPaymentId += 1;
+        currentPaymentId = id + 1;
+        emit PaymentCreated(payment);
         _claimPayment(payment.payee, payment);
-        _registerPayment(payment);
     }
 
     function _cancelPayment(address canceller, Payment memory payment) private {
@@ -142,9 +125,7 @@ contract Payments is IPayment {
         uint256 installments = payment.numberOfInstallments;
         uint256 totalAmount = payment.amountPerInstallment * payment.numberOfInstallments;
 
-        if (payment.payer != canceller) {
-            revert Payments__NotThePayer();
-        }
+        require(payment.payer == canceller, "only the payer can cancel a payment");
 
         for (uint256 i; i < installments; ++i) {
             if (block.timestamp < payment.nextInstallmentTimestamp) break;
@@ -152,23 +133,22 @@ contract Payments is IPayment {
             payment.nextInstallmentTimestamp += payment.secondsBetweenInstallments;
             payment.numberOfInstallments -= 1;
         }
-        IERC20 token = IERC20(payment.currency);
-        if (amountDue > 0) {
-            token.safeTransfer(payment.payee, amountDue);
-        }
-        token.safeTransfer(payment.payer, totalAmount - amountDue);
+
         payment.paymentState = PaymentState.Cancelled;
         payments[payment.paymentId] = payment;
-        _registerPaymentCancelled(payment.paymentId, totalAmount);
+
+        if (amountDue > 0) {
+            IERC20(payment.currency).safeTransfer(payment.payee, amountDue);
+        }
+        IERC20(payment.currency).safeTransfer(payment.payer, totalAmount - amountDue);
+        emit PaymentCancelled(payment.paymentId, totalAmount);
     }
 
     function _claimPayment(address claimer, Payment memory payment) private {
         uint256 amountDue;
         uint256 installments = payment.numberOfInstallments;
 
-        if (payment.payee != claimer) {
-            revert Payments__NotThePayee();
-        }
+        require(payment.payee == claimer, "only payee can claim payment");
 
         for (uint256 i; i < installments; ++i) {
             if (block.timestamp < payment.nextInstallmentTimestamp) break;
@@ -176,41 +156,23 @@ contract Payments is IPayment {
             payment.nextInstallmentTimestamp += payment.secondsBetweenInstallments;
             payment.numberOfInstallments -= 1;
         }
-        if (amountDue > 0) {
-            IERC20(payment.currency).safeTransfer(payment.payee, amountDue);
-        }
+
         if (payment.numberOfInstallments == 0) {
             payment.paymentState = PaymentState.Paid;
         }
         payments[payment.paymentId] = payment;
-        _registerPaymentClaimed(payment.paymentId, amountDue);
+
+        if (amountDue > 0) {
+            IERC20(payment.currency).safeTransfer(payment.payee, amountDue);
+        }
+        emit PaymentClaimed(payment.paymentId, amountDue);
     }
 
-    function _registerPayment(Payment memory payment) private {
-        governor.registerPayment(
-            payment.payer,
-            payment.payee,
-            payment.currency,
-            payment.amountPerInstallment,
-            payment.paymentId,
-            payment.numberOfInstallments,
-            payment.secondsBetweenInstallments
-        );
+    function _validateState(PaymentState paymentState, Payment memory payment) private pure {
+        require(payment.paymentState == paymentState, "Invalid payment state");
     }
 
-    function _registerPaymentCancelled(uint256 paymentId, uint256 amountCancelled) private {
-        governor.registerPaymentCancelled(paymentId, amountCancelled);
-    }
-
-    function _registerPaymentClaimed(uint256 paymentId, uint256 amountClaimed) private {
-        governor.registerPaymentClaimed(paymentId, amountClaimed);
-    }
-
-    function _validateState(PaymentState paymentState, Payment memory payment) private {
-        if (payment.paymentState != paymentState) revert Payments__InvalidState(paymentState, payment.paymentId);
-    }
-
-    //// View Functions
+    // View Functions
 
     function getPayment(uint256 paymentId) external view returns (Payment memory) {
         return payments[paymentId];
@@ -224,9 +186,9 @@ contract Payments is IPayment {
         return _payments;
     }
 
-    //// Governor Function
+    // Owner Function
 
-    function setFee(uint8 _feePercent) external onlyGovernor {
+    function setFee(uint8 _feePercent) external onlyOwner {
         feePercent = _feePercent;
     }
 }
