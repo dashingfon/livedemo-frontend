@@ -9,7 +9,6 @@ import {IDAO_Governor} from "./interfaces/IDAO_Governor.sol";
 /// @title the contract that handles user profiles and dao names
 /// @author Mfon Stephen Nwa
 contract Profile is IProfile {
-
     mapping(string => address) daoRecords;
     mapping(address => string) userProfiles;
     uint8 constant STRING_LIMIT = 32;
@@ -25,7 +24,6 @@ contract Profile is IProfile {
         require(IDAO_Governor(dao).isMember(user), "not a member of the dao");
         userProfiles[user] = URI;
         emit ProfileUpdated(user, dao, URI);
-
     }
 
     /// @inheritdoc	IProfile

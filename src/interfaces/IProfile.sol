@@ -5,7 +5,6 @@ pragma solidity 0.8.19;
 /// @title the interface that the `Profile` contract implements
 /// @author Mfon Stephen Nwa
 interface IProfile {
-
     /// @notice Ethe event emitted when a user profile is updated
     /// @param user the user address
     /// @param DAO the dao the user refrences
