@@ -13,15 +13,8 @@ html {
     --black: #181818;
     --white: #FFFFFF;
     --grey-main: #E1DFDF;
-    --grey-1: #D9D9D9;
     --grey-2: #F3F3F3;
-    --grey-4: #F5F5F5;
-    --grey-5: #A7A7A7;
-    --grey-6: #A9A9A9;
     --dark-grey: #848181;
-
-
-    --button: #FF4D4D;
     --background: #F8F9FF;
 
     --headingFont: "Arial", sans-serif;
@@ -46,9 +39,9 @@ body {
 
 p {
     margin-top: 0;
-    max-width: 30em;
+    /* max-width: 30em; */
     font-weight: 400;
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
 }
 
 h1,
@@ -100,7 +93,15 @@ ul {
 nav {
     background-color: var(--white);
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 1rem 3rem;
+}
+
+button {
+    border-radius: 6px;
+}
+
+.hero-buttons{
+    display: flex;
+    
 }
