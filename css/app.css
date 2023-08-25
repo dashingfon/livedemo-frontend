@@ -17,8 +17,8 @@ html {
     --dark-grey: #848181;
     --background: #F8F9FF;
 
-    --headingFont: "Arial", sans-serif;
-    --bodyFont: "Arial", sans-serif;
+    /* --headingFont: "Arial", sans-serif;
+    --bodyFont: "Arial", sans-serif; */
 
     --backgroundColor: var(--background);
     --textColor: var(--black);
@@ -47,8 +47,7 @@ p {
 h1,
 h2,
 h3,
-h4,
-h5 {
+h4 {
     margin: 0;
     font-family: var(--headingFont);
     font-weight: 400;
@@ -75,8 +74,11 @@ h4 {
 }
 
 h5 {
-    font-size: 1.25rem;
-    font-weight: 600;
+font-size: 1.25rem;
+margin: 0;
+font-family: var(--headingFont);
+font-weight: 400;
+line-height: 1.1;
 }
 
 
@@ -91,17 +93,6 @@ ul {
 }
 
 nav {
-    background-color: var(--white);
-    display: flex;
-    align-items: center;
-    padding: 1rem 3rem;
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="167" viewBox="0 0 1440 167" fill="none"><path d="M-0.947266 -0.947266H1441.89V166.627H-0.947266V-0.947266Z" fill="url(%23paint0_linear_312_4256)"/><defs><linearGradient id="paint0_linear_312_4256" x1="720.473" y1="-0.947266" x2="720.473" y2="166.627" gradientUnits="userSpaceOnUse"><stop stop-color="%2306FF4B" stop-opacity="1.0"/><stop offset="1" stop-color="%2300B131" stop-opacity="0.5"/></linearGradient></defs></svg>');
 }
 
-button {
-    border-radius: 6px;
-}
-
-.hero-buttons{
-    display: flex;
-    
-}
