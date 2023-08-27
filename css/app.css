@@ -39,9 +39,7 @@ body {
 
 p {
     margin-top: 0;
-    /* max-width: 30em; */
     font-weight: 400;
-    /* margin-bottom: 1.5rem; */
 }
 
 h1,
@@ -95,4 +93,8 @@ ul {
 nav {
     background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="167" viewBox="0 0 1440 167" fill="none"><path d="M-0.947266 -0.947266H1441.89V166.627H-0.947266V-0.947266Z" fill="url(%23paint0_linear_312_4256)"/><defs><linearGradient id="paint0_linear_312_4256" x1="720.473" y1="-0.947266" x2="720.473" y2="166.627" gradientUnits="userSpaceOnUse"><stop stop-color="%2306FF4B" stop-opacity="1.0"/><stop offset="1" stop-color="%2300B131" stop-opacity="0.5"/></linearGradient></defs></svg>');
 }
+
+.scroll-horizontal{display: none; overflow-x: auto;gap: 24px;}
+
+.scroll-horizontal::-webkit-scrollbar{display: none;}
 
