@@ -98,3 +98,9 @@ nav {
 
 .scroll-horizontal::-webkit-scrollbar{display: none;}
 
+.member-container{
+    display: flex;
+    flex-direction: column;
+
+}
+

@@ -1,60 +1,70 @@
-// const userID = document.getElementById('user-id');
+// web3 connect functionality
+ const loginButton = document.getElementById('login-button');
 
-// var _userID;
+    loginButton.addEventListener('click', connectToMetaMask);
 
-// supposed to be gotten from the backend
-// _userID = "0xC963…9d01";
+    async function connectToMetaMask() {
+  try {
+    if (typeof window.ethereum !== 'undefined') {
+      
+      loginButton.textContent = 'Connecting...';
+      
+      // Request access to accounts
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      if (accounts.length > 0) {
+   
+    const truncatedAddress = accounts[0].slice(0, 8); 
 
-// userID.innerText = _userID;
-
-// console.log(userID.innerText);
-
-
-// read more read less ui
- const textElement = document.getElementById('text');
-    const seeMoreButton = document.getElementById('read-more');
-
-    seeMoreButton.addEventListener('click', () => {
-      if (textElement.style.height === '4.3rem') {
-        textElement.style.height= 'auto';
-        seeMoreButton.textContent = 'See Less';
-      } else {
-        textElement.style.height = '4.3rem'; 
-        seeMoreButton.textContent = '...Read More';
-      } 
-    });
-
-// toggle element ui
-   const meetOurTeam = document.getElementById('meet-our-team');
-   const ourTeam = document.getElementById('our-team');
-   const teamPics = document.getElementById('team-pics');
+   
+    loginButton.textContent = `Connected: ${truncatedAddress}...`;
+    loginButton.disabled = true;
+}
+    } else {
+      
+      loginButton.textContent = 'MetaMask Not Detected';
+      loginButton.style.backgroundColor = 'red';
+    }
+  } catch (error) {
     
-    // const teamContent = document.getElementById('team-content');
+    console.error('Error connecting to MetaMask:', error);
+    loginButton.textContent = 'Connection Failed';
+    loginButton.style.backgroundColor = 'red';
+  }
+}
 
-    let isExpanded = true;
 
-    meetOurTeam.addEventListener('click', () => {
-      if (isExpanded) {
-        meetOurTeam.style.display = 'none';
-        ourTeam.style.display = 'block';
-        teamPics.style.display = 'flex';
-      } else {
-         meetOurTeam.style.display = 'block';
-        ourTeam.style.display = 'none';
-        teamPics.style.display = 'none';
-      }
-      isExpanded = !isExpanded;
-    });
 
-    ourTeam.addEventListener('click', () => {
-      if (isExpanded) {
-        meetOurTeam.style.display = 'none';
-        ourTeam.style.display = 'block';
-        teamPics.style.display = 'flex';
-      } else {
-         meetOurTeam.style.display = 'block';
-        ourTeam.style.display = 'none';
-        teamPics.style.display = 'none';
-      }
-      isExpanded = !isExpanded;
-    });
+
+// Retrieve the JSON string from SessionStorage on the next page
+const formDataString2 = sessionStorage.getItem("formData");
+
+if (formDataString2) {
+  // Convert the JSON string to an object
+  const formDataObject2 = JSON.parse(formDataString2);
+
+  console.log(formDataObject2);
+
+  const daoName = formDataObject2["daoName"];
+const daoDescription = formDataObject2["daoDescription"];
+const dateCreated = formDataObject2["submissionDate"];
+const communityLink = formDataObject2["chatLink"];
+
+// Update the DOM with the retrieved values
+  const daoNameElement = document.getElementById("daoName");
+  const daoDescriptionElement = document.getElementById("daoDescription");
+  const dateCreatedElement = document.getElementById("dateCreated");
+  const communityLinkElement = document.getElementById("chatLink");
+
+  daoNameElement.textContent = daoName;
+  daoDescriptionElement.textContent = daoDescription;
+  dateCreatedElement.textContent = dateCreated;
+  communityLinkElement.textContent =communityLink;
+
+
+  // You can now access the form data using the keys in formDataObject2
+} else {
+  console.log("Form data not found in sessionStorage.");
+}
+
+
+

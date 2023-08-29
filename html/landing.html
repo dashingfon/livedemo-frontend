@@ -29,14 +29,16 @@
       </div>
       <!-- login button -->
       <button
+        id="login-button"
         style="
           border-radius: 10px;
           color: white;
           background-color: transparent;
           border: 2.5px solid white;
-          width: 160px;
+          width: auto;
           height: 50px;
           padding: 15px 50px;
+          cursor: pointer;
         "
       >
         Login
@@ -74,11 +76,13 @@
             decision-making, funds management, and fosters collaboration.
           </h5>
           <button
+            id="createDaoButton1"
             style="
               border-radius: 9px;
               padding: 13px 40px;
               background: linear-gradient(180deg, #00b131 0%, #000 100%);
               color: white;
+              cursor: pointer;
             "
           >
             <h5>Create DAO</h5>
@@ -395,15 +399,215 @@
           </article>
         </div>
         <button
+          id="createDaoButton"
           style="
             border-radius: 9px;
             padding: 13px 40px;
             background: linear-gradient(180deg, #00b131 0%, #000 100%);
             color: white;
+            cursor: pointer;
           "
         >
           <h5>Create DAO</h5>
         </button>
+        <div
+          id="popup"
+          style="
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 73, 20, 0.85);
+          "
+        >
+          <div
+            style="
+              position: absolute;
+              top: 50%;
+              left: 75%;
+              transform: translate(-50%, -50%);
+              background-color: white;
+              padding: 20px;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+              width: 25rem;
+              height: 38rem;
+              overflow-y: auto;
+            "
+          >
+            <h2
+              style="
+                color: #00b131;
+                text-transform: none;
+                margin-bottom: 40px;
+                text-align: center;
+              "
+            >
+              Create a dao form
+            </h2>
+            <form id="daoForm" style="display: flex; flex-direction: column">
+              <label for="daoName">Name of DAO:</label>
+              <input
+                type="text"
+                id="daoName"
+                name="daoName"
+                style="margin-bottom: 40px"
+                required
+              />
+
+              <label for="daoDescription">Description of DAO:</label>
+              <textarea
+                id="daoDescription"
+                name="daoDescription"
+                style="margin-bottom: 40px; height: 3rem"
+                required
+              ></textarea>
+
+              <label for="foundingMember1">1) Founding Member Address:</label>
+              <input
+                type="text"
+                id="foundingMember1"
+                name="foundingMember1"
+                required
+              />
+              <label for="allocation">Percent Allocation:</label>
+              <input
+                type="number"
+                id="allocation"
+                name="allocation1"
+                style="margin-bottom: 20px"
+                required
+              />
+              <label for="foundingMember2">2) Founding Member Address:</label>
+              <input
+                type="text"
+                id="foundingMember2"
+                name="foundingMember2"
+                required
+              />
+              <label for="allocation">Percent Allocation:</label>
+              <input
+                type="number"
+                id="allocation"
+                name="allocation2"
+                style="margin-bottom: 20px"
+                required
+              />
+              <label for="foundingMember3">3) Founding Member Address:</label>
+              <input
+                type="text"
+                id="foundingMember3"
+                name="foundingMember3"
+                required
+              />
+              <label for="allocation">Percent Allocation:</label>
+              <input
+                type="number"
+                id="allocation"
+                name="allocation3"
+                style="margin-bottom: 20px"
+                required
+              />
+
+              <!-- Add more founding member fields dynamically using JavaScript -->
+              <div id="dynamicMemberFields" class="member-container">
+                <!-- New member fields will be inserted here -->
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: left;
+                  gap: 20px;
+                "
+              >
+                <button
+                  id="addMemberButton"
+                  style="
+                    margin: auto 0;
+                    background: #00b131;
+                    color: white;
+                    margin-bottom: 20px;
+                    cursor: pointer;
+                  "
+                >
+                  +
+                </button>
+                <button
+                  id="removeMemberButton"
+                  style="
+                    margin: auto 0;
+
+                    margin-bottom: 20px;
+                    cursor: pointer;
+                  "
+                  disabled
+                >
+                  -
+                </button>
+              </div>
+
+              <label for="chatLink">Community Chat Link:</label>
+              <input
+                type="url"
+                id="chatLink"
+                name="chatLink"
+                style="margin-bottom: 40px"
+                required
+              />
+
+              <label for="daoImage">DAO Image:</label>
+              <input
+                type="file"
+                id="daoImage"
+                name="daoImage"
+                style="margin-bottom: 40px"
+                accept="image/*"
+                required
+              />
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: end;
+                  gap: 20px;
+                "
+              >
+                <input
+                  type="hidden"
+                  id="submissionDate"
+                  name="submissionDate"
+                  value=""
+                />
+                <button
+                  id="submitForm"
+                  style="
+                    border-radius: 7.522px;
+                    background: #00b131;
+                    padding: 10px 40px;
+                    cursor: pointer;
+                    color: white;
+                  "
+                >
+                  Submit
+                </button>
+                <button
+                  id="closePopup"
+                  style="
+                    border-radius: 7.522px;
+
+                    padding: 10px 40px;
+                  "
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
       <!-- demo video -->
       <section
@@ -989,5 +1193,7 @@
     </footer>
     <!-- end of footer -->
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/landing.js"></script>
 </html>
