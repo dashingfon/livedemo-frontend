@@ -29,10 +29,10 @@
       <img src="../assets/nav.png" alt="alldao" />
       <!-- nav-links -->
       <div style="display: flex; flex-direction: row; align-items: center">
-        <a href="" style="color: white; margin-right: 10px">About Us</a>
-        <a href="" style="color: white; margin-right: 10px">Roadmap</a>
-        <a href="" style="color: white; margin-right: 10px">Whitepaper</a>
-        <a href="" style="color: white; margin-right: 10px">Demo</a>
+        <a href="" style="color: white; margin-right: 45px">About Us</a>
+        <a href="" style="color: white; margin-right: 45px">Roadmap</a>
+        <a href="" style="color: white; margin-right: 45px">Whitepaper</a>
+        <!-- <a href="" style="color: white; margin-right: 10px">Demo</a> -->
       </div>
       <!-- login button -->
       <button
@@ -53,7 +53,7 @@
     </nav>
     <!-- end of navbar -->
     <!-- main section -->
-    <main style="padding: 1rem 3rem; background: #fff">
+    <main style="padding: 1rem 3rem; background: #f5f7fa">
       <!-- hero section -->
       <section
         style="
@@ -71,20 +71,27 @@
               width: 60px;
               border-radius: 50%;
               background-color: #d9d9d9;
-              /* background-color: brown; */
             "
           ></div>
 
-          <article style="margin: 0 3rem" id="dao-contents">
-            <h1 style="margin: 0; margin-bottom: 0.5rem" id="daoName">
+          <article style="margin: 0 1rem" id="dao-contents">
+            <h1
+              style="margin: 0; margin-bottom: 0.5rem; font-weight: bold"
+              id="daoName"
+            >
               name of dao
             </h1>
             <h5 id="daoDescription" style="max-width: 50vw">
               description of dao
             </h5>
-            <a href="" style="color: blue; text-decoration: underline"
-              >uri.yourdaolink.web3</a
-            ><img src="../assets/ph_copy.png" alt="" />
+            <div style="display: flex; margin-top: 0.5rem; gap: 5px">
+              <a href="" style="color: blue; text-decoration: underline"
+                >uri.yourdaolink.web3</a
+              >
+              <div>
+                <img src="../assets/ph_copy.png" alt="copy-icon" />
+              </div>
+            </div>
           </article>
         </div>
         <div
@@ -97,7 +104,7 @@
         >
           <button
             style="
-              border: 2px solid #181818;
+              border: 2px solid #00b131;
               background: transparent;
               color: #181818;
               padding: 10px 20px;
@@ -109,9 +116,11 @@
             style="
               margin-left: 20px;
               border-radius: 15px;
-              background: #00b131;
+              border: none;
+              background-color: #00b131;
               color: white;
-              padding: 10px 20px;
+              font-weight: bold;
+              padding: 12px 30px;
             "
           >
             Exchange
@@ -127,7 +136,13 @@
             margin-top: 2rem;
           "
         >
-          <div style="padding: 0 3rem; border-bottom: 1px solid #000">
+          <div
+            style="
+              padding: 0 3rem;
+              border-bottom: 1px solid #000;
+              font-weight: bold;
+            "
+          >
             <h5>Details</h5>
           </div>
           <div style="padding: 0 3rem; color: #a0a0a0"><h5>Proposals</h5></div>
@@ -150,33 +165,44 @@
                     margin-left: 2.3rem;
                   "
                   id="chatLink"
-                >
-                  www.discord.com
-                </h5></span
+                ></h5
+              ></span>
+              <span
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  margin-left: 5px;
+                "
               >
-              <span>
                 <img src="../assets/ph_copy.png" alt="copy icon" />
               </span>
             </h5>
             <h5 style="margin-bottom: 0.25rem">
               Proposals
               <span style="margin-left: 1.69rem; margin-right: 2rem"> : </span>
-              xxxx
+              0
             </h5>
             <h5>
               Token Price
               <span style="margin-left: 0.6rem; margin-right: 2rem"> : </span>
-              xxxx
+              0 USD
             </h5>
           </div>
           <!-- members -->
-          <div style="margin: 1rem 0">
+          <div style="margin: 1rem 0; margin-bottom: 3rem">
             <!-- title -->
             <div
-              style="display: flex; flex-direction: row; align-items: center"
+              style="
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-bottom: 1rem;
+              "
             >
-              <h1 style="margin-right: 5px">Members</h1>
+              <h4 style="margin-right: 5px; font-weight: bold">Members</h4>
               <div
+                id="memberCount"
                 style="
                   height: 30px;
                   padding: 4.58px 10.58px;
@@ -187,25 +213,27 @@
                   background: #e1dfdf;
                 "
               >
-                100
+                0
               </div>
             </div>
             <!-- members list container -->
-            <div>
+            <div id="membersList" style="height: 300px; overflow-y: auto">
               <!-- member tile background -->
               <div
+                id="memberTile"
                 style="
                   display: flex;
                   flex-direction: row;
                   align-items: center;
                   justify-content: space-between;
                   border-radius: 15px;
-                  background: #f3f3f3;
+                  background: #fff;
                   padding: 0.5rem 1rem;
-                  margin-bottom: 0.5rem;
+                  margin-bottom: 1rem;
                 "
               >
                 <div
+                  id="memberTitle"
                   style="
                     display: flex;
                     flex-direction: row;
@@ -214,19 +242,20 @@
                   "
                 >
                   <div
+                    id="memberAvatar"
                     style="
                       height: 60px;
                       width: 60px;
                       border-radius: 50%;
-                      background: #e1dfdf;
+                      background-color: #e1dfdf;
                     "
-                  >
-                    .
-                  </div>
-
-                  <h5>0x654321...</h5>
+                  ></div>
+                  <!-- member address -->
+                  <h5 id="memberAddress">0x654321...</h5>
                 </div>
+                <!-- percent allocation -->
                 <div
+                  id="percentAllocation"
                   style="
                     height: 30px;
                     padding: 4.58px 10.58px;
@@ -243,7 +272,55 @@
             </div>
           </div>
           <!-- treasury -->
-          <div></div>
+          <div style="margin: 1rem 0; margin-bottom: 3rem">
+            <h4 style="font-weight: bold; margin-bottom: 1rem">Treasury</h4>
+            <h5 style="margin-bottom: 24px">Total Value Locked : 0 USD</h5>
+            <h5 style="margin-bottom: 2rem">Contract address : 0xbd2495...</h5>
+            <!-- graph updates -->
+            <div style="display: flex; gap: 30px">
+              <!-- update by date -->
+              <div>
+                <!-- header -->
+                <div
+                  style="
+                    padding: 15.68px 19.966px 17.32px 19.6px;
+                    display: flex;
+
+                    gap: 60px;
+                    align-items: center;
+                    background: #f5f5f5;
+                    border-radius: 24.5px;
+                  "
+                >
+                  Past 31 days
+                  <img src="../assets/dropdown.png" alt="" />
+                </div>
+                <!-- dropdown -->
+                <div></div>
+              </div>
+              <!-- update by value -->
+              <div>
+                <!-- header -->
+                <div
+                  style="
+                    display: flex;
+                    padding: 15.68px 19.966px 17.32px 19.6px;
+                    gap: 60px;
+                    align-items: center;
+                    background: #f5f5f5;
+                    border-radius: 24.5px;
+                  "
+                >
+                  Proposal
+                  <img src="../assets/dropdown.png" alt="" />
+                </div>
+                <!-- dropdown -->
+                <div></div>
+              </div>
+            </div>
+            <!-- graph -->
+            <div>test</div>
+          </div>
           <!-- payments -->
           <div></div>
         </div>

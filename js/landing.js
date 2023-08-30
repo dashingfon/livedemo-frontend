@@ -25,7 +25,7 @@
         ourTeam.style.display = 'block';
         teamPics.style.display = 'flex';
       } else {
-         meetOurTeam.style.display = 'block';
+         meetOurTeam.style.display = 'flex';
         ourTeam.style.display = 'none';
         teamPics.style.display = 'none';
       }
@@ -38,7 +38,7 @@
         ourTeam.style.display = 'block';
         teamPics.style.display = 'flex';
       } else {
-         meetOurTeam.style.display = 'block';
+         meetOurTeam.style.display = 'flex';
         ourTeam.style.display = 'none';
         teamPics.style.display = 'none';
       }
