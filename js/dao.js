@@ -74,6 +74,8 @@ const communityLink = formDataObject2["chatLink"];
 }
 
 
+
+// create new member from add member
 if (newMemberFormDataString2) {
   const newMemberFormDataObject2 = JSON.parse(newMemberFormDataString2);
 
@@ -111,8 +113,9 @@ memberCountElement.textContent = currentCount + 1;
 }
 
 
-// add new members
 
+
+// add new members
 const addMemberButton = document.getElementById("addMember");
 const addMemberPopUp = document.getElementById("popupAddMember");
 const closeAddMember = document.getElementById("closeAddMemberFormIcon");
@@ -233,6 +236,117 @@ const myChart = new Chart(ctx, {
 
 
 
+const detailsTab = document.getElementById("detailsTab");
+
+const proposalsTab =  document.getElementById("proposalsTab");
+
+const pollsTab = document.getElementById("pollsTab");
+
+const detailsSection = document.getElementById("details");
+
+const pollsSection = document.getElementById("polls");
+
+const proposalsSection = document.getElementById("proposals");
+
+detailsTab.addEventListener("click", ()=>{
+  detailsSection.style.display = "block";
+  detailsTab.style.color = "#000";
+  detailsTab.style.borderBottom = "2px solid #000";
+  detailsTab.style.fontWeight = "bold";
+
+  pollsSection.style.display = "none";
+  pollsTab.style.color = "#a0a0a0";
+  pollsTab.style.fontWeight = "normal";
+  pollsTab.style.borderBottom = "none";
+
+  proposalsSection.style.display = "none";
+  proposalsTab.style.color = "#a0a0a0";
+  proposalsTab.style.fontWeight = "normal";
+  proposalsTab.style.borderBottom = "none";
+});
+
+proposalsTab.addEventListener("click", ()=>{
+proposalsSection.style.display = "block";
+proposalsTab.style.color = "#000";
+  proposalsTab.style.fontWeight = "bold";
+  proposalsTab.style.borderBottom = "2px solid #000";
+
+detailsSection.style.display = "none";
+detailsTab.style.color = "#a0a0a0";
+  detailsTab.style.borderBottom = "none";
+  detailsTab.style.fontWeight = "normal";
+
+
+pollsSection.style.display = "none";
+pollsTab.style.color = "#a0a0a0";
+  pollsTab.style.fontWeight = "normal";
+  pollsTab.style.borderBottom = "none";
+});
+
+pollsTab.addEventListener("click", ()=>{
+  detailsSection.style.display = "none";
+detailsTab.style.color = "#a0a0a0";
+  detailsTab.style.borderBottom = "none";
+  detailsTab.style.fontWeight = "normal";
+
+  pollsSection.style.display = "block";
+  pollsTab.style.color = "#000";
+  pollsTab.style.fontWeight = "bold";
+  pollsTab.style.borderBottom = "2px solid #000";
+
+  proposalsSection.style.display = "none";
+  proposalsTab.style.color = "#a0a0a0";
+  proposalsTab.style.fontWeight = "normal";
+  proposalsTab.style.borderBottom = "none";
+});
 
 
 
+// proposals innit 🤘
+
+const createProposalButton = document.getElementById("createProposalButton");
+
+const createProposalFormPopup = document.getElementById("createProposalFormPopup");
+
+const closeCreateProposalIcon = document.getElementById("closeCreateProposalIcon2");
+
+createProposalButton.addEventListener("click", ()=>{
+  createProposalFormPopup.style.display = "block";
+});
+
+closeCreateProposalIcon.addEventListener("click", ()=>{
+  createProposalFormPopup.style.display = "none";
+});
+
+
+// proposals dropdown
+
+const gorvernorProposalDropDownIcon = document.getElementById("gorvernorProposalDropdownIcon");
+
+const gorvernorProposalDropDownText = document.getElementById("gorvernorProposalDropdownText");
+
+const paymentProposalDropDownIcon = document.getElementById("paymentProposalDropdownIcon");
+
+const paymentProposalDropDownText = document.getElementById("paymentProposalDropdownText");
+
+const fundingProposalDropDownIcon = document.getElementById("fundingProposalDropdownIcon");
+
+const fundingProposalDropDownText = document.getElementById("fundingProposalDropdownText");
+
+gorvernorProposalDropDownIcon.addEventListener("click", ()=>{
+  gorvernorProposalDropDownText.style.display = "block";
+  fundingProposalDropDownText.style.display = "none";
+  paymentProposalDropDownText.style.display = "none";
+});
+
+paymentProposalDropDownIcon.addEventListener("click", ()=>{
+  paymentProposalDropDownText.style.display = "block";
+  fundingProposalDropDownText.style.display = "none";
+  gorvernorProposalDropDownText.style.display = "none";
+});
+
+fundingProposalDropDownIcon.addEventListener("click", ()=>{
+  fundingProposalDropDownText.style.display = "block";
+  paymentProposalDropDownText.style.display = "none";
+  gorvernorProposalDropDownText.style.display = "none";
+});

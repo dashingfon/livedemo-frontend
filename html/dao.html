@@ -240,18 +240,31 @@
           "
         >
           <div
+            id="detailsTab"
             style="
               padding: 0 3rem;
               border-bottom: 1px solid #000;
               font-weight: bold;
+              cursor: pointer;
             "
           >
             <h5>Details</h5>
           </div>
-          <div style="padding: 0 3rem; color: #a0a0a0"><h5>Proposals</h5></div>
+          <div
+            id="proposalsTab"
+            style="padding: 0 3rem; color: #a0a0a0; cursor: pointer"
+          >
+            <h5>Proposals</h5>
+          </div>
+          <div
+            id="pollsTab"
+            style="padding: 0 3rem; color: #a0a0a0; cursor: pointer"
+          >
+            <h5>Polls</h5>
+          </div>
         </div>
         <!-- details section -->
-        <div>
+        <div id="details" style="display: block">
           <!-- details -->
           <div style="margin: 1rem 0; margin-bottom: 3rem">
             <h5>
@@ -494,6 +507,185 @@
           <!-- payments -->
           <div></div>
         </div>
+        <!-- proposals -->
+        <div id="proposals" style="display: none">
+          <div
+            style="
+              margin: 1rem 0;
+              display: flex;
+              flex-direction: row;
+              justify-content: end;
+            "
+          >
+            <button
+              id="createProposalButton"
+              style="
+                padding: 10px 20px;
+                border-radius: 10px;
+                background: #00b131;
+                color: white;
+                border: none;
+                cursor: pointer;
+              "
+            >
+              Create Proposal
+            </button>
+          </div>
+          <!-- popup -->
+          <div
+            id="createProposalFormPopup"
+            style="
+              display: none;
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 73, 20, 0.85);
+            "
+          >
+            <!-- popup-content -->
+            <div
+              style="
+                position: absolute;
+                top: 30%;
+                left: 75%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                padding: 20px;
+                border-radius: 20px;
+
+                width: 469px;
+                height: auto;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
+                <h4 style="font-weight: bold; margin-bottom: 0.25rem">
+                  Create Proposal
+                </h4>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                  "
+                >
+                  <img
+                    id="closeCreateProposalIcon2"
+                    src="../assets/close-icon.png"
+                    alt="close-icon"
+                    style="cursor: pointer"
+                  />
+                </div>
+              </div>
+              <p style="margin-bottom: 1rem">Select the type of proposal</p>
+              <!-- governor -->
+              <div
+                style="
+                  border-radius: 10px;
+                  background: #f3f3f3;
+
+                  padding: 10px;
+                  margin-bottom: 18px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold">Governor</p>
+                  <div>
+                    <img
+                      src="../assets/dropdown.png"
+                      alt="dropdown-icon"
+                      id="gorvernorProposalDropdownIcon"
+                      style="cursor: pointer"
+                    />
+                  </div>
+                </div>
+                <p style="display: none" id="gorvernorProposalDropdownText">
+                  control, use this proposal to change laws, make rules
+                </p>
+              </div>
+              <!-- funding -->
+              <div
+                style="
+                  border-radius: 10px;
+                  background: #f3f3f3;
+
+                  padding: 10px;
+                  margin-bottom: 18px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold">Funding</p>
+                  <div>
+                    <img
+                      src="../assets/dropdown.png"
+                      alt="dropdown-icon"
+                      id="fundingProposalDropdownIcon"
+                      style="cursor: pointer"
+                    />
+                  </div>
+                </div>
+                <p style="display: none" id="fundingProposalDropdownText">
+                  ownership, use this proposal to raise funds by listing your
+                  tokens on the exchange
+                </p>
+              </div>
+              <!-- payment -->
+              <div
+                style="
+                  border-radius: 10px;
+                  background: #f3f3f3;
+
+                  padding: 10px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <p style="font-weight: bold">Payment</p>
+                  <div>
+                    <img
+                      src="../assets/dropdown.png"
+                      alt="dropdown-icon"
+                      id="paymentProposalDropdownIcon"
+                      style="cursor: pointer"
+                    />
+                  </div>
+                </div>
+                <p style="display: none" id="paymentProposalDropdownText">
+                  power, use this proposal to allocate funds
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- polls -->
+        <div id="polls" style="display: none">polls</div>
       </section>
     </main>
     <!-- end of main section -->
