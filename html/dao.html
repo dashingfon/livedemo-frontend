@@ -94,21 +94,16 @@
             </div>
           </article>
         </div>
-        <div
-          style="
-            display: flex;
-
-            flex-direction: row;
-            align-items: flex-end;
-          "
-        >
+        <div style="display: flex; flex-direction: row; align-items: flex-end">
           <button
+            id="addMember"
             style="
               border: 2px solid #00b131;
               background: transparent;
               color: #181818;
               padding: 10px 20px;
               border-radius: 15px;
+              cursor: pointer;
             "
           >
             Add Member</button
@@ -121,10 +116,117 @@
               color: white;
               font-weight: bold;
               padding: 12px 30px;
+              cursor: pointer;
             "
           >
             Exchange
           </button>
+        </div>
+        <!-- popup -->
+        <div
+          id="popupAddMember"
+          style="
+            display: none;
+            position: fixed;
+            top: 0;
+
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 73, 20, 0.85);
+          "
+        >
+          <!-- popup content -->
+          <div
+            style="
+              position: absolute;
+              top: 50%;
+              left: 75%;
+              transform: translate(-50%, -50%);
+              background-color: white;
+              padding: 20px;
+              border-radius: 20px;
+
+              width: 469px;
+              height: auto;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+              "
+            >
+              <h4 style="font-weight: bold; margin-bottom: 0.25rem">
+                Add Member
+              </h4>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <img
+                  id="closeAddMemberFormIcon"
+                  src="../assets/close-icon.png"
+                  alt="close-icon"
+                  style="cursor: pointer"
+                />
+              </div>
+            </div>
+            <p style="margin-bottom: 1rem">
+              Enter infomation of the member you would like to add
+            </p>
+            <!-- add member form -->
+            <form
+              id="addMemberForm"
+              style="display: flex; flex-direction: column"
+            >
+              <input
+                type="text"
+                id="newMemberAddress"
+                name="newMemberAddress"
+                style="
+                  margin-bottom: 20px;
+                  padding: 17px 302px 19px 20px;
+                  border-radius: 25px;
+                  background: #f3f3f3;
+                  border: none;
+                "
+                required
+                placeholder="Target Address"
+              />
+              <input
+                type="text"
+                id="newMemberPercentAllocation"
+                name="newMemberPercentAllocation"
+                style="
+                  margin-bottom: 20px;
+                  padding: 17px 302px 19px 20px;
+                  border-radius: 25px;
+                  background: #f3f3f3;
+                  border: none;
+                "
+                required
+                placeholder="Percent"
+              />
+              <button
+                id="submitNewMemberForm"
+                style="
+                  font-weight: bold;
+                  padding: 10px 20px;
+                  border-radius: 20px;
+                  background: #00b131;
+                  border: none;
+                  color: white;
+                "
+              >
+                Submit
+              </button>
+            </form>
+          </div>
         </div>
       </section>
       <section>
@@ -261,7 +363,6 @@
                     padding: 4.58px 10.58px;
                     justify-content: center;
                     align-items: center;
-
                     border-radius: 20.82px;
                     background: #e1dfdf;
                   "
@@ -279,9 +380,10 @@
             <!-- graph updates -->
             <div style="display: flex; gap: 30px">
               <!-- update by date -->
-              <div>
+              <div style="position: relative; margin-bottom: 3rem">
                 <!-- header -->
                 <div
+                  id="header"
                   style="
                     padding: 15.68px 19.966px 17.32px 19.6px;
                     display: flex;
@@ -293,15 +395,47 @@
                   "
                 >
                   Past 31 days
-                  <img src="../assets/dropdown.png" alt="" />
+                  <img
+                    src="../assets/dropdown.png"
+                    alt="dropdown-icon"
+                    style="display: flex; cursor: pointer"
+                    id="dropdownIcon"
+                  />
+                  <img
+                    src="../assets/backup.png"
+                    alt="backup-icon"
+                    style="display: none; cursor: pointer"
+                    id="backupIcon"
+                  />
                 </div>
                 <!-- dropdown -->
-                <div></div>
+                <div
+                  id="graphDropdown"
+                  style="
+                    position: absolute;
+                    z-index: 1;
+                    top: 60px;
+                    padding: 15.68px 19.966px 17.32px 19.6px;
+                    display: none;
+                    flex-direction: column;
+                    gap: 10px;
+
+                    background: #f5f5f5;
+                    border-radius: 24.5px;
+                  "
+                >
+                  <p>Past 7 days</p>
+                  <p>Past 14 days</p>
+                  <p>Past 31 days</p>
+                  <p>Past 90 days</p>
+                  <p>Past 365 days</p>
+                </div>
               </div>
               <!-- update by value -->
-              <div>
+              <div style="position: relative; margin-bottom: 3rem">
                 <!-- header -->
                 <div
+                  id="header2"
                   style="
                     display: flex;
                     padding: 15.68px 19.966px 17.32px 19.6px;
@@ -311,15 +445,50 @@
                     border-radius: 24.5px;
                   "
                 >
-                  Proposal
-                  <img src="../assets/dropdown.png" alt="" />
+                  All
+                  <img
+                    src="../assets/dropdown.png"
+                    alt="dropdown-icon"
+                    style="display: flex; cursor: pointer"
+                    id="dropdownIcon2"
+                  />
+                  <img
+                    src="../assets/backup.png"
+                    alt="backup-icon"
+                    style="display: none; cursor: pointer"
+                    id="backupIcon2"
+                  />
                 </div>
                 <!-- dropdown -->
-                <div></div>
+                <div
+                  id="graphDropdown2"
+                  style="
+                    position: absolute;
+                    z-index: 1;
+                    top: 60px;
+                    padding: 15.68px 19.966px 17.32px 19.6px;
+                    display: none;
+                    flex-direction: column;
+                    gap: 10px;
+
+                    background: #f5f5f5;
+                    border-radius: 24.5px;
+                  "
+                >
+                  <p>Proposals</p>
+                  <p>Members</p>
+                  <p>Token Price</p>
+                  <p>All</p>
+                </div>
               </div>
             </div>
             <!-- graph -->
-            <div>test</div>
+            <canvas
+              id="myChart"
+              width="1200"
+              height="389"
+              style="margin-bottom: 20rem"
+            ></canvas>
           </div>
           <!-- payments -->
           <div></div>
@@ -328,7 +497,129 @@
     </main>
     <!-- end of main section -->
     <!-- footer -->
+    <footer
+      style="
+        background-color: black;
+        padding: 1rem 3rem;
+        padding-top: 5rem;
+        position: relative;
+      "
+    >
+      <!-- main footer content -->
+      <div style="display: flex">
+        <div style="margin-right: 30px">
+          <img src="../assets/nav.png" alt="alldao" />
+        </div>
+        <div style="color: white; width: 300px; margin-right: 140px">
+          <p>
+            Thank You for Visiting AllDAO! Join our thriving community and take
+            your web3 community to new heights with our cutting-edge platform.
+          </p>
+        </div>
+        <div>
+          <div>
+            <p style="color: white">
+              Be The First To Know What Is New On AllDao
+            </p>
+          </div>
+          <div style="margin-bottom: 5rem">
+            <button
+              style="
+                background-color: #00b131;
+                color: white;
+                padding: 15px 25px;
+                border: none;
+              "
+            >
+              Subscribe
+            </button>
+            <input
+              type="text"
+              style="height: 50px; width: 400px"
+              placeholder="Enter Email Address"
+            />
+          </div>
+          <div>
+            <p style="color: white">Join our community on</p>
+          </div>
+          <div>
+            <img
+              src="../assets/Ellipse 4.png"
+              alt="gmail"
+              style="margin-right: 10px"
+            />
+            <img
+              src="../assets/Ellipse 5.png"
+              alt="github"
+              style="margin-right: 10px"
+            />
+            <img
+              src="../assets/Ellipse 6.png"
+              alt="whatsapp"
+              style="margin-right: 10px"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- horizontal line -->
+      <hr
+        style="
+          width: 800px;
+          color: white;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          margin-top: 1rem;
+        "
+      />
+      <!-- copyright -->
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0.5rem;
+        "
+      >
+        <img src="../assets/Copyrigt.png" alt="copyright" />
+
+        <p style="color: white; margin-left: 10px; margin-bottom: 0">
+          Copyright 2023
+        </p>
+      </div>
+      <!-- <div
+        style="
+          height: 150px;
+          width: 900px;
+          position: absolute;
+          background-color: white;
+          top: -80px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          left: 50%;
+          transform: translateX(-50%);
+          border-radius: 40px;
+        "
+      >
+        <h5 style="margin-right: 20px">White Paper Available</h5>
+        <button
+          style="
+            background-color: #01490e;
+            border-radius: 12px;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+          "
+        >
+          Download Here
+        </button>
+      </div> -->
+    </footer>
     <!-- end of footer -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../js/app.js"></script>
+    <script src="../js/dao.js"></script>
   </body>
 </html>
