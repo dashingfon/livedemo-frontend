@@ -12,8 +12,17 @@ import {SafeERC20} from "openzeppelin/token/ERC20/utils/SafeERC20.sol";
 contract Payments is IPayment {
     using SafeERC20 for IERC20;
 
-    uint8 public feePercent = 3;
-    uint8 public constant DENOMINATOR = 100;
+    error Payments__PayerCannotBePayee();
+    error Payments__PayeeCannotBeZeroAddress();
+    error Payments__CurrencyCannotBeZeroAddress();
+    error Payments__TotalPaymentAmountCannotBeZero();
+    error Payments__OnlyPayerCanCancelPayment();
+    error Payments__OnlyPayeeCanClaim();
+    error Payments__InvalidPaymentState();
+    error Payments__OnlyOwnerCanCall();
+
+    uint24 public feePercent = 300;
+    uint16 public constant BASIS_POINT = 10000;
     address immutable owner;
     uint256 public currentPaymentId;
 
@@ -27,12 +36,12 @@ contract Payments is IPayment {
 
     /// @inheritdoc	IPayment
     function calculateFee(uint256 amount) public view returns (uint256 feeAmount) {
-        feeAmount = (amount * feePercent) / DENOMINATOR;
+        feeAmount = (amount * feePercent) / BASIS_POINT;
     }
 
     /// @inheritdoc	IPayment
     function calculateRemovedFee(uint256 amount) public view returns (uint256 feeRemovedAmount) {
-        feeRemovedAmount = amount - ((amount * feePercent) / DENOMINATOR);
+        feeRemovedAmount = amount - ((amount * feePercent) / BASIS_POINT);
     }
 
     // External Functions
@@ -52,7 +61,7 @@ contract Payments is IPayment {
     /// @inheritdoc	IPayment
     function cancelPayment(uint256 paymentId) external {
         Payment memory payment = payments[paymentId];
-        _validateState(PaymentState.Paying, payment);
+        _enforceInState(PaymentState.Paying, payment);
         _cancelPayment(msg.sender, payment);
     }
 
@@ -61,7 +70,7 @@ contract Payments is IPayment {
         Payment memory payment;
         for (uint256 i; i < paymentIds.length; ++i) {
             payment = payments[paymentIds[i]];
-            _validateState(PaymentState.Paying, payment);
+            _enforceInState(PaymentState.Paying, payment);
             _cancelPayment(msg.sender, payment);
         }
     }
@@ -69,7 +78,7 @@ contract Payments is IPayment {
     /// @inheritdoc	IPayment
     function claimPayment(uint256 paymentId) external {
         Payment memory payment = payments[paymentId];
-        _validateState(PaymentState.Paying, payment);
+        _enforceInState(PaymentState.Paying, payment);
         _claimPayment(msg.sender, payment);
     }
 
@@ -78,7 +87,7 @@ contract Payments is IPayment {
         Payment memory payment;
         for (uint256 i; i < paymentIds.length; ++i) {
             payment = payments[paymentIds[i]];
-            _validateState(PaymentState.Paying, payment);
+            _enforceInState(PaymentState.Paying, payment);
             _claimPayment(msg.sender, payment);
         }
     }
@@ -89,10 +98,10 @@ contract Payments is IPayment {
         uint256 id = currentPaymentId;
         uint256 totalPaymentAmount = (paymentRequest.numberOfInstallments * paymentRequest.amountPerInstallment);
 
-        require(paymentRequest.payee != creator, "payer cannot be payee");
-        require(paymentRequest.payee != address(0), "payee cannot be zero address");
-        require(paymentRequest.currency != address(0), "currency cannot be zero address");
-        require(totalPaymentAmount != 0, "total payment amount cannot be zero");
+        if (paymentRequest.payee == creator) revert Payments__PayerCannotBePayee();
+        if (paymentRequest.payee == address(0)) revert Payments__PayeeCannotBeZeroAddress();
+        if (paymentRequest.currency == address(0)) revert Payments__CurrencyCannotBeZeroAddress();
+        if (totalPaymentAmount == 0) revert Payments__TotalPaymentAmountCannotBeZero();
 
         Payment memory payment = Payment({
             paymentState: PaymentState.Paying,
@@ -120,7 +129,7 @@ contract Payments is IPayment {
         uint256 installments = payment.numberOfInstallments;
         uint256 totalAmount = payment.amountPerInstallment * payment.numberOfInstallments;
 
-        require(payment.payer == canceller, "only the payer can cancel a payment");
+        if (payment.payer != canceller) revert Payments__OnlyPayerCanCancelPayment();
 
         for (uint256 i; i < installments; ++i) {
             if (block.timestamp < payment.nextInstallmentTimestamp) break;
@@ -143,7 +152,7 @@ contract Payments is IPayment {
         uint256 amountDue;
         uint256 installments = payment.numberOfInstallments;
 
-        require(payment.payee == claimer, "only payee can claim payment");
+        if (payment.payee != claimer) revert Payments__OnlyPayeeCanClaim();
 
         for (uint256 i; i < installments; ++i) {
             if (block.timestamp < payment.nextInstallmentTimestamp) break;
@@ -163,8 +172,8 @@ contract Payments is IPayment {
         emit PaymentClaimed(payment.paymentId, amountDue);
     }
 
-    function _validateState(PaymentState paymentState, Payment memory payment) private pure {
-        require(payment.paymentState == paymentState, "Invalid payment state");
+    function _enforceInState(PaymentState paymentState, Payment memory payment) private pure {
+        if (payment.paymentState != paymentState) revert Payments__InvalidPaymentState();
     }
 
     // View Functions
@@ -183,8 +192,8 @@ contract Payments is IPayment {
 
     // Owner Function
 
-    function setFee(uint8 _feePercent) external {
-        require(msg.sender == owner, "Only owner can call");
+    function setFee(uint24 _feePercent) external {
+        if (msg.sender != owner) revert Payments__OnlyOwnerCanCall();
         feePercent = _feePercent;
     }
 }

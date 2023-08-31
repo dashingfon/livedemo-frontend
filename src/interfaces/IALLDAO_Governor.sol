@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import "./IDAO_Governor.sol";
 import "./IEventRegister.sol";
 
-interface IALLDAO_Governor is IDAO_Governor, IEventRegister {
+interface IALLDAO_Governor is IDAO_Governor {
     event DAO_Created(uint256 id, address DAO, string DAO_Name);
 
     struct Shares {

@@ -11,24 +11,26 @@ import {IStorage} from "./interfaces/IStorage.sol";
 contract Storage is IStorage {
     using SafeERC20 for IERC20;
 
+    error Storage__OnlyOwnerCanCall();
+    error Storage__CurrencyCannotBeZeroAddress();
+
     address public immutable owner;
+    uint256 public constant BASIS_POINT = 10000;
     address public currency;
     uint256 public priceNumerator;
-    uint256 public priceDenumerator;
 
     mapping(address => uint256) suscriptions;
 
     constructor(address _currency) {
         currency = _currency;
         priceNumerator = 1;
-        priceDenumerator = 1;
         owner = msg.sender;
     }
 
     /// @inheritdoc	IStorage
     function subscribe(uint256 amount) external {
         uint256 userExpiration = viewSubscription(msg.sender);
-        IERC20(currency).safeTransferFrom(msg.sender, address(this), (amount * priceNumerator) / priceDenumerator);
+        IERC20(currency).safeTransferFrom(msg.sender, address(this), (amount * priceNumerator) / BASIS_POINT);
         suscriptions[msg.sender] = userExpiration + amount;
         emit StorageSuscribed(msg.sender, amount);
     }
@@ -46,21 +48,19 @@ contract Storage is IStorage {
 
     /// @inheritdoc	IStorage
     function setCurrency(address _currency) external {
-        require(msg.sender == owner, "only owner can call");
-        require(currency != address(0), "currency cannot be the zero address");
+        if (msg.sender != owner) revert Storage__OnlyOwnerCanCall();
+        if (currency == address(0)) revert Storage__CurrencyCannotBeZeroAddress();
         currency = _currency;
     }
 
     /// @inheritdoc	IStorage
-    function setPrice(uint256 numerator, uint256 denumerator) external {
-        require(msg.sender == owner, "only owner can call");
-        require(denumerator > 0, "denumerator cannot be zero");
+    function setPrice(uint256 numerator) external {
+        if (msg.sender != owner) revert Storage__OnlyOwnerCanCall();
         priceNumerator = numerator;
-        priceDenumerator = denumerator;
     }
 
     /// @inheritdoc	IStorage
     function getPrice() external view returns (uint256) {
-        return priceNumerator / priceDenumerator;
+        return priceNumerator / BASIS_POINT;
     }
 }

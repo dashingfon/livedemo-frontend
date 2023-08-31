@@ -95,5 +95,5 @@ interface IPayment {
     /// @notice function to set the fee the Payment contract charges
     /// @dev This function can only be called by the ALLDAO Governor
     /// @param _feePercent the new feePercent to set
-    function setFee(uint8 _feePercent) external;
+    function setFee(uint24 _feePercent) external;
 }

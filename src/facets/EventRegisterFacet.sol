@@ -10,6 +10,7 @@ import {LibDiamond} from "../libraries/LibDiamond.sol";
 
 pragma solidity 0.8.19;
 
+contract EventRegisterFacet {}
 // function registerProposal();
 
 // function registerProposalResult();

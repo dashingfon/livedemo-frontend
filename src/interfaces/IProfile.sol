@@ -36,4 +36,6 @@ interface IProfile {
     /// @notice function to view the dao address linked to a name
     /// @param daoName the name of the dao to get
     function getDAO(string memory daoName) external view returns (address);
+
+    function setUserProfile(address user, string memory userURI) external;
 }

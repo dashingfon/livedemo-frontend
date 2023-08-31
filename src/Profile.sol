@@ -44,4 +44,7 @@ contract Profile is IProfile {
     function getDAO(string memory daoName) external view returns (address) {
         return daoRecords[daoName];
     }
+
+    /// @inheritdoc	IProfile
+    function setUserProfile(address user, string memory userURI) external {}
 }

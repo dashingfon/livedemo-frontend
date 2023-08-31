@@ -30,8 +30,7 @@ interface IStorage {
 
     /// @notice function to set the price of subscribing
     /// @param numerator the price numerator
-    /// @param denumerator the price denumerator
-    function setPrice(uint256 numerator, uint256 denumerator) external;
+    function setPrice(uint256 numerator) external;
 
     /// @notice function to set the price of subscribing
     /// @return price the cost of one second subscription
