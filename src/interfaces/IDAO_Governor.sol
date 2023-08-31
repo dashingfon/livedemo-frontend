@@ -2,6 +2,9 @@
 
 pragma solidity 0.8.19;
 
+import {IListing} from "./IListing.sol";
+import {IPayment} from "./IPayment.sol";
+
 /// @title A title that should describe the contract/interface
 /// @author The name of the author
 /// @notice Explain to an end user what this does
@@ -61,24 +64,19 @@ interface IDAO_Governor {
 
     function isMember(address user) external view returns (bool);
 
-    function getShares(address user) external view returns (uint8);
+    function getShares(address user) external view returns (uint256);
 
-    function proposeListing(
-        uint256 supplyAmount,
-        uint256 recieveAmount,
-        uint256 votingPeriod,
-        string memory listingDescriptionURI
-    ) external;
+    function proposeListing(string memory _descriptionURI, IListing.ListingRequest memory listingRequest) external;
 
-    function proposeListings(uint256 supplyAmount) external;
-
-    function proposePayment(Payment memory payment, string memory paymentDescriptionURI, uint256 votingPeriod)
+    function proposeListings(string memory _descriptionURI, IListing.ListingRequest[] memory listingRequests)
         external;
 
-    function proposePayments(Payment[] memory payment, string memory paymentDescriptionURI, uint256 votingPeriod)
+    function proposePayment(string memory _descriptionURI, IPayment.PaymentRequest memory paymentRequest) external;
+
+    function proposePayments(string memory _descriptionURI, IPayment.PaymentRequest[] memory paymentRequests)
         external;
 
-    function propose(uint256 votingPeriod, string memory descriptionURI, Call[] memory calls) external;
+    function propose(string memory _descriptionURI, Call[] memory _calls) external returns (uint256);
 
     function getProposal(uint256 proposalId) external view returns (Proposal memory proposal);
 
@@ -96,7 +94,7 @@ interface IDAO_Governor {
 
     /// The functions below will only be callable after the governance process
 
-    function relay(address target, uint256 value, bytes calldata data) external payable returns (bool);
+    function relay(address target, uint256 value, bytes calldata data) external payable;
 
     function setURI(string calldata URI) external;
 

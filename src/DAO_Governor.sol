@@ -2,46 +2,74 @@
 
 pragma solidity 0.8.19;
 
+/// External Library
+
 import "openzeppelin/utils/Address.sol";
-import {IListing} from "./interfaces/IListing.sol";
-import {IPayment} from "./interfaces/IPayment.sol";
+import {ERC1155Holder} from "openzeppelin/token/ERC1155/utils/ERC1155Holder.sol";
+import {ERC721Holder} from "openzeppelin/token/ERC721/utils/ERC721Holder.sol";
+
+/// Interfaces
+
+import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
+import {IDiamondLoupe} from "./interfaces/IDiamondLoupe.sol";
+import {IDAO_Governor, IListing, IPayment} from "./interfaces/IDAO_Governor.sol";
+import {IDAO_Token} from "./interfaces/IDAO_Token.sol";
+import {IEventRegister} from "./interfaces/IEventRegister.sol";
+
+/// Libraries
+
 import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {LibGovernance} from "./libraries/LibGovernance.sol";
 import {LibProposal} from "./libraries/LibProposal.sol";
-import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
-import {IDiamondLoupe} from "./interfaces/IDiamondLoupe.sol";
-import {IDAO_Governor} from "./interfaces/IDAO_Governor.sol";
-import {IDAO_Token} from "./interfaces/IDAO_Token.sol";
-import {ERC1155Holder} from "openzeppelin/token/ERC1155/utils/ERC1155Holder.sol";
-import {ERC721Holder} from "openzeppelin/token/ERC721/utils/ERC721Holder.sol";
 
 /// @title A title that should describe the contract/interface
 /// @author The name of the author
 /// @notice Explain to an end user what this does
 /// @dev Explain to a developer any extra details
-abstract contract DAO_Governor is IDAO_Governor, ERC1155Holder, ERC721Holder{
-    error FunctionNotFound(bytes4 _functionSelector);
+abstract contract DAO_Governor is IDAO_Governor, ERC1155Holder, ERC721Holder {
     error ProposalIdExists(uint256);
     error ContractNotDeployed(string);
-    error NotAnExecutor(address);
+    error NotAMember(address);
+    error VotingNotStarted(uint256 proposalId);
+    error InvalidProposal(uint256 proposalId);
+    error InvalidState();
+    error NotTheProposer(address caller, uint256 proposalId);
+    error NoVotingRights(address caller, uint256 proposalId);
+    error FunctionNotFound(bytes4 _functionSelector);
 
-    modifier onlyGovernance() {}
+    address immutable DEPLOYER;
 
-    modifier isMember(address user) {}
+    modifier onlyGovernance() {
+        _;
+    }
 
-    constructor(string memory uri, address _init, bytes _calldata) {
-        LibGovernance.setURI(uri);
+    // modifier onlyGovernance() {
+    //     require(_msgSender() == _executor(), "Governor: onlyGovernance");
+    //     if (_executor() != address(this)) {
+    //         bytes32 msgDataHash = keccak256(_msgData());
+    //         // loop until popping the expected operation - throw if deque is empty (operation not authorized)
+    //         while (_governanceCall.popFront() != msgDataHash) {}
+    //     }
+    //     _;
+    // }
+
+    constructor(string memory _uri, address _init, bytes memory _calldata) {
+        DEPLOYER = msg.sender;
+        LibGovernance.setURI(_uri);
         LibDiamond.setContractOwner(address(this));
-        // set the gorvenance settings
+        // set the gorvenance settings from the _calldata
+        // add the msg.sender to the deployments
         // LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
     }
+
+    /// Public and External Functions
 
     function uri() external view returns (string memory) {
         return LibGovernance.uri();
     }
 
     function isMember(address user) external view returns (bool) {
-        IDAO_Token token = IDAO_Token(LibGovernance.token);
+        IDAO_Token token = IDAO_Token(LibGovernance.token());
         return token.balanceOf(user, 0) > 0;
     }
 
@@ -49,103 +77,155 @@ abstract contract DAO_Governor is IDAO_Governor, ERC1155Holder, ERC721Holder{
     /// @dev shares is (token total supply / user balance) * 100
     /// @param user the user to get the shares
     /// @return `uint8` the user shares
-    function getShares(address user) external view returns (uint8) {
-        return LibGovernance.getShares(user);
+    function getShares(address user) external view returns (uint256) {
+        IDAO_Token token = IDAO_Token(LibGovernance.token());
+        uint256 totalSupply = token.getTotalSupply();
+        uint256 owned = token.balanceOf(user, 0);
+        if (owned == 0) return 0;
+        return (totalSupply / owned) * 100;
     }
 
-    function proposeListing(string memory _descriptionURI, ListingRequest memory listingRequest) external {
-        address listingContract = LibGovernance.getDeployment("Listing");
-        if (listingContract == address(0)) revert ContractNotDeployed("Listing");
-        bytes data = abi.encodeWithSignature("createListing(ListingRequest)", listingRequest);
-        Call call = Call({targetAddress: listingContract, targetCalldata: data})
+    function proposeListing(string memory _descriptionURI, IListing.ListingRequest memory listingRequest) external {
+        address listingContract = _getDeployment("Listing");
+        bytes memory data = abi.encodeWithSignature("createListing(ListingRequest)", listingRequest);
+        IDAO_Governor.Call[] memory call;
+        call[0] = IDAO_Governor.Call({targetAddress: listingContract, targetCalldata: data});
         _propose(msg.sender, _descriptionURI, call);
     }
 
-    function proposeListings(string memory _descriptionURI, ListingRequest[] memory listingRequests) external {
-        address listingContract = LibGovernance.getDeployment("Listing");
-        if (listingContract == address(0)) revert ContractNotDeployed("Listing");
-        bytes data = abi.encodeWithSignature("createListings(ListingRequest[])", listingRequests);
-        Call call = Call({targetAddress: listingContract, targetCalldata: data})
+    function proposeListings(string memory _descriptionURI, IListing.ListingRequest[] memory listingRequests)
+        external
+    {
+        address listingContract = _getDeployment("Listing");
+        bytes memory data = abi.encodeWithSignature("createListings(ListingRequest[])", listingRequests);
+        IDAO_Governor.Call[] memory call;
+        call[0] = IDAO_Governor.Call({targetAddress: listingContract, targetCalldata: data});
         _propose(msg.sender, _descriptionURI, call);
     }
 
-    function proposePayment(string memory _descriptionURI, PaymentRequest memory paymentRequest) external {
-        address paymentContract = LibGovernance.getDeployment("Payment");
-        if (paymentContract == address(0)) revert ContractNotDeployed("Payment");
-        bytes data = abi.encodeWithSignature("createPayment(PaymentRequest)", paymentRequest);
-        Call call = Call({targetAddress: paymentContract, targetCalldata: data})
+    function proposePayment(string memory _descriptionURI, IPayment.PaymentRequest memory paymentRequest) external {
+        address paymentContract = _getDeployment("Payment");
+        bytes memory data = abi.encodeWithSignature("createPayment(PaymentRequest)", paymentRequest);
+        IDAO_Governor.Call[] memory call;
+        call[0] = IDAO_Governor.Call({targetAddress: paymentContract, targetCalldata: data});
         _propose(msg.sender, _descriptionURI, call);
     }
 
-    function proposePayments(string memory _descriptionURI, PaymentRequest[] memory paymentRequests) external {
-        address paymentContract = LibGovernance.getDeployment("Payment");
-        if (paymentContract == address(0)) revert ContractNotDeployed("Payment");
-        bytes data = abi.encodeWithSignature("createPayments(PaymentRequest[])", paymentRequests);
-        Call call = Call({targetAddress: paymentContract, targetCalldata: data})
+    function proposePayments(string memory _descriptionURI, IPayment.PaymentRequest[] memory paymentRequests)
+        external
+    {
+        address paymentContract = _getDeployment("Payment");
+        bytes memory data = abi.encodeWithSignature("createPayments(PaymentRequest[])", paymentRequests);
+        IDAO_Governor.Call[] memory call;
+        call[0] = IDAO_Governor.Call({targetAddress: paymentContract, targetCalldata: data});
         _propose(msg.sender, _descriptionURI, call);
     }
 
-    function propose(string memory _descriptionURI, Call[] memory _calls) external returns (uint256){
+    function propose(string memory _descriptionURI, IDAO_Governor.Call[] memory _calls) external returns (uint256) {
         _propose(msg.sender, _descriptionURI, _calls);
     }
 
-    function _propose(address proposer, string memory _descriptionURI, Call[] memory _calls) external returns (uint256) {
+    function getProposal(uint256 proposalId) external view returns (Proposal memory proposal) {
+        proposal = LibProposal.getProposal(proposalId);
+    }
+
+    function cancelProposal(uint256 proposalId) external {
+        Proposal memory proposal = LibProposal.getProposal(proposalId);
+        if (proposal.proposer != msg.sender) revert NotTheProposer(msg.sender, proposalId);
+        proposal.proposalStatus = ProposalStatus.Cancelled;
+    }
+
+    function castVote(uint256 proposalId, Vote vote) external {
+        _castVote(msg.sender, proposalId, vote);
+    }
+
+    function castVoteBySig() external {}
+
+    function castVoteBySigs() external {}
+
+    function voteReciept(uint256 proposalId) external returns (Vote vote) {
+        vote = LibProposal.viewVote(msg.sender, proposalId);
+    }
+
+    function execute(uint256 proposalId) external {}
+
+    /// Private and Internal Functions
+
+    function _castVote(address user, uint256 proposalId, Vote vote) private {
+        Proposal storage proposal = LibProposal.getProposal(proposalId);
+        uint256 voteStartTimestamp = proposal.voteStartTimestamp;
+        address token = LibGovernance.token();
+        uint256 userVotingRight = IDAO_Token(token).getPastVotes(msg.sender, voteStartTimestamp);
+        ProposalStatus status = proposal.proposalStatus;
+
+        if (voteStartTimestamp <= 0) revert InvalidProposal(proposalId);
+        if (status != ProposalStatus.Active || status != ProposalStatus.Delay) {
+            revert InvalidState();
+        }
+        if (block.timestamp > voteStartTimestamp) revert VotingNotStarted(proposalId);
+        if (userVotingRight <= 0) revert NoVotingRights(msg.sender, proposalId);
+
+        proposal.proposalStatus = ProposalStatus.Active;
+        LibProposal.castVote(proposalId, user, vote, userVotingRight);
+    }
+
+    function _hashProposal(string memory description, IDAO_Governor.Call[] memory calls)
+        private
+        pure
+        returns (uint256 proposalId)
+    {
+        proposalId = uint256(keccak256(abi.encode(description, calls)));
+    }
+
+    function _propose(address proposer, string memory _descriptionURI, IDAO_Governor.Call[] memory _calls)
+        private
+        returns (uint256)
+    {
         uint256 id = _hashProposal(_descriptionURI, _calls);
-        Proposal proposal = Proposal({
+        LibGovernance.ensureIsProposer(msg.sender);
+        LibGovernance.GovernanceStorage storage govStorage = LibGovernance.governanceStorage();
+        LibGovernance.GovernanceSetting memory govSetting = govStorage.governorSetting;
+
+        uint256 votingDelay = govSetting.votingDelay;
+        uint256 votingPeriod = govSetting.votingPeriod;
+        uint256 executionDelay = govSetting.executionDelay;
+
+        Proposal memory proposal = Proposal({
             proposalId: id,
             forVotes: 0,
             againstVotes: 0,
             proposalCreationTimestamp: block.timestamp,
-            voteStartTimestamp:
-            voteEndTimestamp:
-            executionTimestamp:
-             proposalStatus: ProposalStatus.Delay,
+            voteStartTimestamp: votingDelay + block.timestamp,
+            voteEndTimestamp: votingPeriod + votingDelay + block.timestamp,
+            executionTimestamp: executionDelay + votingPeriod + votingDelay + block.timestamp,
+            proposalStatus: ProposalStatus.Delay,
             proposer: msg.sender,
             descriptionURI: _descriptionURI,
             calls: _calls
-        })
+        });
+        LibProposal.setProposal(id, proposal);
+        IEventRegister(DEPLOYER).registerProposal(address(this), proposer, _descriptionURI, _calls, block.timestamp);
     }
 
-    function _hashProposal(string description, Call[] calls) external pure returns (uint256 proposalId) {
-        proposalId = uint256(keccak256(abi.encode(description, calls)));
+    function _getDeployment(string memory deploymentName) private view returns (address deployment) {
+        deployment = LibGovernance.getDeployment(deploymentName);
+        if (deployment == address(0)) revert ContractNotDeployed(deploymentName);
     }
 
-    function getProposal(uint256 proposalId) external view returns (Proposal memory proposal);
-
-    function cancelProposal(uint256 proposalID) external;
-
-    function castVote(uint256 proposalID, Vote vote) external;
-
-    function castVoteBySig() external;
-
-    function castVoteBySigs() external;
-
-    function voteReciept(uint256 proposalId) external returns (Vote vote);
-
-    function execute(uint256 proposalID) external {
-
-    }
-
-    /// The functions below will only be callable after the governance process
+    /// Governance Functions
 
     function relay(address target, uint256 value, bytes calldata data) external payable onlyGovernance {
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         Address.verifyCallResult(success, returndata, "Governor: relay reverted without message");
     }
 
-    function setURI(string calldata URI) external;
+    function setURI(string calldata URI) external onlyGovernance {}
 
-    function addFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {
+    function addFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {}
 
-    }
+    function removeFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {}
 
-    function removeFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {
-
-    }
-
-    function replaceFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {
-
-    }
+    function replaceFunctions(address facetAddress, bytes4[] memory functionSelectors) external onlyGovernance {}
 
     /// @notice fallback function
     /// @dev Find facet for function that is called and execute the

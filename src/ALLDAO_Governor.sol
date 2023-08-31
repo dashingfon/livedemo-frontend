@@ -8,7 +8,7 @@ import {DAO_Governor} from "./DAO_Governor.sol";
 abstract contract ALLDAO_Governor is IALLDAO_Governor, DAO_Governor {
     constructor() {}
 
-    function createDAO(string memory daoName, Shares[] memory shares) external;
+    function createDAO(string memory daoName, Shares[] memory shares) external virtual;
 
-    function isChildDao(address) external view returns (bool);
+    function isChildDao(address) external view virtual returns (bool);
 }

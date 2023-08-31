@@ -8,6 +8,7 @@ import {Strings} from "openzeppelin/utils/Strings.sol";
 import {ERC1155} from "openzeppelin/token/ERC1155/ERC1155.sol";
 import {IALLDAO_Governor} from "./interfaces/IALLDAO_Governor.sol";
 import {IDAO_Token} from "./interfaces/IDAO_Token.sol";
+import {IEventRegister} from "./interfaces/IEventRegister.sol";
 import {Votes} from "openzeppelin/governance/utils/Votes.sol";
 
 /// @title the governance token used by ALLDAO protocol
@@ -118,7 +119,7 @@ contract DAO_Token is IDAO_Token, Votes, ERC1155 {
                 uint256 fromBalance = balanceOf(from, 0);
                 uint256 toBalance = balanceOf(to, 0);
                 emit VoteUpdate(from, fromBalance, to, toBalance);
-                governor.registerVoteUpdate(address(this), from, fromBalance, to, toBalance);
+                IEventRegister(address(governor)).registerVoteUpdate(address(this), from, fromBalance, to, toBalance);
             }
         }
         super._afterTokenTransfer(operator, from, to, ids, amounts, data);

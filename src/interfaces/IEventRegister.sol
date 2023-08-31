@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.19;
 
+import {IDAO_Governor} from "./IDAO_Governor.sol";
+
 interface IEventRegister {
     event ProposalExecuted();
 
@@ -17,17 +19,23 @@ interface IEventRegister {
         uint256 recieverBalance
     ) external;
 
-    function registerUpdatedGovernanceURI() external;
+    function registerUpdatedGovernanceURI(address dao, string memory newURI) external;
 
-    function registerProposal() external;
+    function registerProposal(
+        address dao,
+        address proposer,
+        string memory proposalURI,
+        IDAO_Governor.Call[] memory calls,
+        uint256 timestampCreated
+    ) external;
 
-    function registerProposalCancelled() external;
+    function registerProposalCancelled(uint256 proposalId) external;
 
-    function registerProposalExecuted() external;
+    function registerProposalExecuted(uint256 proposalId) external;
 
-    // function registerAddFunction();
+    function registerAddFunction(bytes4[] memory selector, address facet) external;
 
-    // function registerRemoveFunction();
+    function registerRemoveFunction(bytes4[] memory selector, address facet) external;
 
-    // function registerReplaceFunction();
+    function registerReplaceFunction(bytes4[] memory selector, address facet) external;
 }

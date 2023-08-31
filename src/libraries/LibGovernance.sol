@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import "openzeppelin/utils/structs/DoubleEndedQueue.sol";
+import {DoubleEndedQueue} from "openzeppelin/utils/structs/DoubleEndedQueue.sol";
 
 /// @title The Library thet helps with handling Governance functions
 /// @author Mfon Stephen Nwa
@@ -11,46 +11,42 @@ library LibGovernance {
 
     bytes32 constant GOVERNANCE_STORAGE_POSITION = keccak256("diamond.storage.governance.storage");
 
-    error LibGovernance__NameTooLong();
-
-    modifier enforceGovernance(string name) {
-        require(msg.sender == _executor(), "Governor: onlyGovernance");
-        if (_executor() != address(this)) {
-            bytes32 msgDataHash = keccak256(_msgData());
-            // loop until popping the expected operation - throw if deque is empty (operation not authorized)
-            while (_governanceCall.popFront() != msgDataHash) {}
-        }
-        _;
-    }
+    error IsNotProposer(address);
+    error IsNotExecutor(address);
 
     struct Deployment {
         string name;
         address deploymentAddress;
     }
 
+    struct GovernanceSetting {
+        uint256 votingPeriod;
+        uint256 votingDelay;
+        uint256 executionDelay;
+        uint256 proposalThreshold;
+        uint256 quorumFraction;
+    }
+
     struct GovernanceStorage {
         address[] proposers;
         address[] executors;
         address token;
-        uint256 votingPeriod;
-        uint256 votingDelay;
-        uint256 proposalThreshold;
-        uint256 quorumFraction;
+        GovernanceSetting governorSetting;
         Deployment[] deployments;
         DoubleEndedQueue.Bytes32Deque _governanceCall;
         string uri;
     }
 
-    function governanceStorage() internal pure returns (GovernanceStorage storage gs) {
+    function governanceStorage() internal view returns (GovernanceStorage storage gs) {
         bytes32 position = GOVERNANCE_STORAGE_POSITION;
         assembly {
             gs.solt := position
         }
     }
 
-    function setURI(string memory uri) internal {
+    function setURI(string memory _uri) internal {
         GovernanceStorage storage gs = governanceStorage();
-        gs.uri = uri;
+        gs.uri = _uri;
     }
 
     function uri() internal view returns (string memory _uri) {
@@ -63,39 +59,65 @@ library LibGovernance {
         tokenAddress = gs.token;
     }
 
-    function getShares(address user) internal view returns (uint8) {
-        IDAO_Token token = IDAO_Token(token());
-        uint256 totalSupply = token.getTotalSupply();
-        uint256 owned = token.balanceOf(user, 0);
-        if (owned == 0) return 0;
-        return (totalSupply / owned) * 100;
-    }
-
-    function addDeployment(Deployment[] deployments) internal {
+    function addDeployment(Deployment[] memory deployments) internal {
         GovernanceStorage storage gs = governanceStorage();
         for (uint256 i; i < deployments.length; ++i) {
             gs.deployments.push(deployments[i]);
         }
     }
 
-    function getDeployment(string name) internal view returns (address deploymentAddress) {
+    function getDeployment(string memory name) internal view returns (address deploymentAddress) {
         GovernanceStorage storage gs = governanceStorage();
-        Deployments[] deployments = gs.deployments;
+        Deployment[] memory deployments = gs.deployments;
+        bytes32 nameBytes = keccak256(abi.encodePacked(name));
         for (uint256 i; i < deployments.length; ++i) {
-            if (deployments[i].name == name) {
-                deploymentAddress = deployment[i].deploymentAddress;
+            if (keccak256(abi.encodePacked(deployments[i].name)) == nameBytes) {
+                deploymentAddress = deployments[i].deploymentAddress;
                 break;
             }
         }
     }
 
-    function isProposer(address user) internal view returns (bool) {}
+    function viewDeployments(string memory name) internal view returns (Deployment[] memory deployments) {
+        GovernanceStorage storage gs = governanceStorage();
+        deployments = gs.deployments;
+    }
 
-    function isExecutor(address user) internal view returns (bool) {}
+    function ensureIsProposer(address user) internal view {
+        GovernanceStorage storage gs = governanceStorage();
+        address[] memory proposers = gs.proposers;
+        if (proposers.length == 0) return;
+        bool isProposer;
+        for (uint256 i; i < proposers.length; ++i) {
+            if (user == proposers[i]) {
+                isProposer = true;
+                break;
+            }
+        }
+        if (!isProposer) revert IsNotProposer(user);
+    }
 
-    function isVoter(address user) internal view returns (bool) {}
+    function ensureIsExecutor(address user) internal view {
+        GovernanceStorage storage gs = governanceStorage();
+        address[] memory executors = gs.executors;
+        if (executors.length == 0) return;
+        bool isExecutor;
+        for (uint256 i; i < executors.length; ++i) {
+            if (user == executors[i]) {
+                isExecutor = true;
+                break;
+            }
+        }
+        if (!isExecutor) revert IsNotProposer(user);
+    }
 
-    functio setProposers() internal;
+    function setProposers(address[] memory proposers) internal {
+        GovernanceStorage storage gs = governanceStorage();
+        gs.proposers = proposers;
+    }
 
-    functio setExecutors() internal;
+    function setExecutors(address[] memory executors) internal {
+        GovernanceStorage storage gs = governanceStorage();
+        gs.executors = executors;
+    }
 }
